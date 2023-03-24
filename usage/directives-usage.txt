@@ -1,0 +1,10 @@
+Usage:
+    freeformgen directives [options] <path-to-source>
+
+Options:
+    --directory, -d
+        Indicates that the path is pointing to a directory of source
+        files.
+
+    --help, -h
+        Displays this help message and exits.

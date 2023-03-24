@@ -1,0 +1,20 @@
+Usage:
+    freeformgen <command> [options] <args>
+
+    To learn more about the available options for each command, use the
+    `--help` flag like so:
+
+    `freeformgen <command> --help`
+
+Commands:
+    directives <path-to-source>
+        Generates the function map to inject directives and functionality
+        into a Go template based on source code. The provided path can
+        point to either a single GO file or an entire package of GO using
+        the `-d` flag. Directives are created from any exported function
+        that (1) has a name with the "Directive" suffix and (2) returns a
+        single payload with an optional error; the directive will share
+        the same name (camel-cased) without the suffix.
+
+    help
+        Displays this help message and exists.

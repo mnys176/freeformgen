@@ -2,40 +2,72 @@ package main
 
 import (
 	_ "embed"
+	"flag"
 	"fmt"
 	"os"
+
+	"github.com/mnys176/freeformgen/directives"
 )
 
-//go:embed usage/usage.txt
+type executable interface {
+	Execute() error
+}
+
+type freeformgenError struct {
+	Message string
+}
+
+func (e freeformgenError) Error() string {
+	return fmt.Sprintf("freeformgen: %s", e.Message)
+}
+
+//go:embed usage.txt
 var usage string
 
+func execute(e executable) {
+	if err := e.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+}
+
+func noCommandSpecifiedError() error {
+	return freeformgenError{"no command specified"}
+}
+
+func unknownCommandError(command string) error {
+	return freeformgenError{fmt.Sprintf("unknown command: %s", command)}
+}
+
+func init() {
+	flag.Usage = func() {
+		// TODO: Dynamically generate this.
+		fmt.Fprintln(os.Stdout, usage)
+	}
+}
+
 func main() {
-	input := os.Args[1:]
+	flag.Parse()
 
 	// Check if no command is specified.
-	if len(input) == 0 {
-		fmt.Println("freeformgen: no command specified")
-		fmt.Println(usage)
+	if len(flag.Args()) == 0 {
+		fmt.Fprintln(os.Stderr, noCommandSpecifiedError())
+		flag.Usage()
 		return
 	}
 
-	switch cmd := input[0]; cmd {
+	var action executable
+	var err error
+	switch cmd := flag.Arg(0); cmd {
 	case "directives":
-		exec, err := parseDirectiveCommand(input)
+		action, err = directives.Parse()
 		if err != nil {
-			fmt.Printf("freeformgen: %s\n", err)
-			fmt.Println(directiveCommandUsage)
+			fmt.Fprintln(os.Stderr, err)
 			return
 		}
-		err = exec.Handle()
-		if err != nil {
-			fmt.Println(err)
-		}
 	case "help":
-		fmt.Println(usage)
+		flag.Usage()
 	default:
-		fmt.Printf("freeformgen: invalid command: `%s`\n", cmd)
-		fmt.Println(usage)
+		fmt.Fprintln(os.Stderr, unknownCommandError(cmd))
 	}
-
+	execute(action)
 }

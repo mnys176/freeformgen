@@ -1,8 +1,8 @@
-package main
+package directives
 
 import (
 	_ "embed"
-	"errors"
+	"flag"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -14,6 +14,85 @@ import (
 
 	"golang.org/x/mod/modfile"
 )
+
+type directivesError struct {
+	Message string
+}
+
+func (e directivesError) Error() string {
+	return fmt.Sprintf("freeformgen: directives: %s", e.Message)
+}
+
+type DirectivesCommand struct {
+	Path      string
+	Directory bool
+}
+
+func (dc *DirectivesCommand) Execute() error {
+	if len(dc.Path) == 0 {
+		return noSourceProvidedError()
+	}
+
+	fset := token.NewFileSet()
+	directives := make([]Directive, 0)
+	if !dc.Directory {
+		// Process single file.
+		astFile, err := parser.ParseFile(fset, dc.Path, nil, 0)
+		if err != nil {
+			return err
+		}
+		foundDirectives, err := processASTFile(dc.Path, astFile)
+		if err != nil {
+			return err
+		}
+		directives = append(directives, foundDirectives...)
+	} else {
+		// Process all files in the directory.
+		astPackages, err := parser.ParseDir(fset, dc.Path, nil, 0)
+		if err != nil {
+			return err
+		}
+		for _, astPackage := range astPackages {
+			for path, astFile := range astPackage.Files {
+				foundDirectives, err := processASTFile(path, astFile)
+				if err != nil {
+					return err
+				}
+				directives = append(directives, foundDirectives...)
+			}
+		}
+	}
+
+	sort.Slice(directives, func(i, j int) bool {
+		return directives[i].Name < directives[j].Name
+	})
+
+	// Overwrite output file in the current directory.
+	f, err := os.Create("./directives_gen.go")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	// Parse `go.mod` file to derive full imports.
+	modSrc, err := os.ReadFile("./go.mod")
+	if err != nil {
+		return err
+	}
+	modFile, err := modfile.Parse("go.mod", modSrc, nil)
+	if err != nil {
+		return err
+	}
+
+	tmpl := template.Must(template.New("directives").Parse(Template))
+	return tmpl.Execute(f, DirectiveTemplate{
+		Prompt:     strings.Join(os.Args, " "),
+		ModPath:    modFile.Module.Mod.Path,
+		Directives: directives,
+	})
+}
+
+var DirectivesFlagSet = flag.NewFlagSet("directives", flag.ContinueOnError)
 
 type DirectiveParam struct {
 	Name     string
@@ -70,156 +149,27 @@ func (dt DirectiveTemplate) Imports() []string {
 	return imports
 }
 
-type directiveCommand struct {
-	Path      string
-	Directory bool
-	Help      bool
-}
-
-func (dc directiveCommand) String() string {
-	const template string = `Path     : %s
-Directory: %t
-Help     : %t`
-
-	return fmt.Sprintf(
-		template,
-		dc.Path,
-		dc.Directory,
-		dc.Help,
-	)
-}
-
-func (dc directiveCommand) Handle() error {
-	if dc.Help {
-		fmt.Println(directiveCommandUsage)
-		return nil
-	}
-	if len(dc.Path) == 0 {
-		return errors.New("no source provided")
-	}
-
-	fset := token.NewFileSet()
-	directives := make([]Directive, 0)
-	if !dc.Directory {
-		// Process single file.
-		astFile, err := parser.ParseFile(fset, dc.Path, nil, 0)
-		if err != nil {
-			return err
-		}
-		foundDirectives, err := processASTFile(dc.Path, astFile)
-		if err != nil {
-			return err
-		}
-		directives = append(directives, foundDirectives...)
-	} else {
-		// Process all files in the directory.
-		astPackages, err := parser.ParseDir(fset, dc.Path, nil, 0)
-		if err != nil {
-			return err
-		}
-		for _, astPackage := range astPackages {
-			for path, astFile := range astPackage.Files {
-				foundDirectives, err := processASTFile(path, astFile)
-				if err != nil {
-					return err
-				}
-				directives = append(directives, foundDirectives...)
-			}
-		}
-	}
-
-	sort.Slice(directives, func(i, j int) bool {
-		return directives[i].Name < directives[j].Name
-	})
-
-	// Overwrite output file in the current directory.
-	f, err := os.Create("./directives_gen.go")
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	// Parse `go.mod` file to derive full imports.
-	modSrc, err := os.ReadFile("./go.mod")
-	if err != nil {
-		return err
-	}
-	modFile, err := modfile.Parse("go.mod", modSrc, nil)
-	if err != nil {
-		return err
-	}
-
-	tmpl := template.Must(template.New("directives").Parse(rawDirectivesTmpl))
-	return tmpl.Execute(f, DirectiveTemplate{
-		Prompt:     strings.Join(os.Args, " "),
-		ModPath:    modFile.Module.Mod.Path,
-		Directives: directives,
-	})
-}
-
 const directiveFunctionSuffix string = "Directive"
 
-//go:embed usage/directives-usage.txt
-var directiveCommandUsage string
+//go:embed usage.txt
+var Usage string
 
-//go:embed templates/directives.tmpl
-var rawDirectivesTmpl string
+//go:embed template.tmpl
+var Template string
 
-func parseDirectiveCommand(input []string) (*directiveCommand, error) {
-	// Handle help.
-	if len(input) == 1 || len(input) == 2 && (input[1] == "-h" || input[1] == "--help") {
-		return &directiveCommand{Help: true}, nil
+func noSourceProvidedError() error {
+	return directivesError{"no source provided"}
+}
+
+func incorrectNumberOfArgumentsError(got int) error {
+	return directivesError{fmt.Sprintf("wrong number of arguments: %d", got)}
+}
+
+func init() {
+	DirectivesFlagSet.Usage = func() {
+		// TODO: Dynamically generate this.
+		fmt.Fprintln(os.Stdout, Usage)
 	}
-
-	// Only `--help` option is valid without arguments.
-	if len(input) == 2 && input[1] != "-h" && input[1] != "--help" && strings.HasPrefix(input[1], "-") {
-		return nil, fmt.Errorf("unknown option: `%s`", input[1])
-	}
-
-	parsedDirectiveCommand := directiveCommand{Path: input[len(input)-1]}
-
-	// Check if default behavior is desired (no options).
-	if len(input) == 2 {
-		return &parsedDirectiveCommand, nil
-	}
-
-	// var addNext bool
-	// var previous string
-	found := map[string]bool{"directory": false, "help": false}
-	for _, token := range input[1 : len(input)-1] {
-		// Add values to key-value pair options.
-		// if addNext {
-		// 	switch previous {
-		// 	case "config":
-		// 		absPath, _ := filepath.Abs(token)
-		// 		parsedCreate.Config = absPath
-		// 	}
-		// 	addNext = false
-		// 	continue
-		// }
-
-		switch token {
-		case "-h", "--help":
-			if !found["help"] {
-				found["help"] = true
-				parsedDirectiveCommand.Help = true
-			}
-		case "-d", "--directory":
-			if !found["directory"] {
-				found["directory"] = true
-				parsedDirectiveCommand.Directory = true
-			}
-		// case "-c", "--config":
-		// 	if !found["config"] {
-		// 		found["config"] = true
-		// 		previous = "config"
-		// 		addNext = true
-		// 	}
-		default:
-			return nil, fmt.Errorf("unknown option: `%s`", token)
-		}
-	}
-	return &parsedDirectiveCommand, nil
 }
 
 func processASTFile(goSrcPath string, astFile *ast.File) ([]Directive, error) {
@@ -268,11 +218,15 @@ func processASTFile(goSrcPath string, astFile *ast.File) ([]Directive, error) {
 				Params: make([]DirectiveParam, 0, len(declParams)),
 			}
 			for _, param := range declParams {
+				var paramName strings.Builder
 				paramTypeBytes := goSrc[param.Type.Pos()-astFile.Pos() : param.Type.End()-astFile.Pos()]
+				for _, pn := range param.Names {
+					paramName.WriteString(pn.Name + ", ")
+				}
 				directive.Params = append(
 					directive.Params,
 					DirectiveParam{
-						Name:     param.Names[0].Name,
+						Name:     strings.TrimSuffix(paramName.String(), ", "),
 						Type:     string(paramTypeBytes),
 						Variadic: strings.HasPrefix(string(paramTypeBytes), "..."),
 					},

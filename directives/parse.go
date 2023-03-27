@@ -1,22 +1,37 @@
 package directives
 
 import (
+	_ "embed"
 	"flag"
+	"fmt"
+	"os"
+
+	"github.com/mnys176/freeformgen/globals"
 )
 
-func Parse() (*DirectivesCommand, error) {
-	// Create executable.
-	dc := DirectivesCommand{}
-	DirectivesFlagSet.BoolVar(&dc.Directory, "directory", false, "make me better")
-	DirectivesFlagSet.BoolVar(&dc.Directory, "d", false, "make me better")
+//go:embed usage.txt
+var usage string
 
-	// Parse flags.
-	DirectivesFlagSet.Parse(flag.Args()[1:])
+func usageFunc() {
+	fmt.Fprintln(os.Stdout, usage)
+}
+
+func Parse() error {
+	fs := flag.NewFlagSet(globals.DirectivesCommand, flag.ContinueOnError)
+	fs.Usage = usageFunc
+
+	fs.BoolVar(&directory, "directory", false, "")
+	fs.BoolVar(&directory, "d", false, "")
+	fs.BoolVar(&help, "help", false, "")
+	fs.BoolVar(&help, "h", false, "")
+
+	// Parse options.
+	fs.Parse(flag.Args()[1:])
 
 	// Parse arguments.
-	if n := DirectivesFlagSet.NArg(); n > 1 {
-		return nil, incorrectNumberOfArgumentsError(n)
+	if n := fs.NArg(); n > 1 {
+		return globals.IncorrectNumberOfArgumentsError(n)
 	}
-	dc.Path = DirectivesFlagSet.Arg(0)
-	return &dc, nil
+	packageSourcePath = fs.Arg(0)
+	return nil
 }

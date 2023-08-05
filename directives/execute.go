@@ -2,7 +2,6 @@ package directives
 
 import (
 	_ "embed"
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -27,10 +26,6 @@ var (
 var rawTemplate string
 
 func Execute() error {
-	if help {
-		fmt.Fprintln(os.Stdout, usage)
-		return nil
-	}
 
 	if len(packageSourcePath) == 0 {
 		return globals.NoSourceError()

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -15,6 +14,10 @@ type freeformgenError struct {
 
 func (e freeformgenError) Error() string {
 	return "freeformgen: " + e.err.Error()
+}
+
+func (e freeformgenError) Is(target error) bool {
+	return e.Error() == target.Error()
 }
 
 func init() {
@@ -35,15 +38,18 @@ func init() {
 
 func main() {
 	flag.Parse()
-	args := flag.Args()
+	// args := flag.Args()
 
-	if len(args) == 0 {
-		err := freeformgenError{errors.New("no source file or directory provided")}
-		fmt.Fprintln(os.Stderr, err.Error())
-		return
-	}
+	// if len(args) == 0 {
+	// 	err := freeformgenError{errors.New("no source file or directory provided")}
+	// 	fmt.Fprintln(os.Stderr, err.Error())
+	// 	return
+	// }
 
-	for _, arg := range args {
-		fmt.Printf("%q\n", arg)
-	}
+	// for _, arg := range args {
+	// 	fmt.Printf("%q\n", arg)
+	// }
+
+	fmt.Println("------------------------------")
+
 }

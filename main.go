@@ -43,27 +43,7 @@ func main() {
 		return
 	}
 
-	// // Check if no command is specified.
-	// if len(flag.Args()) == 0 {
-	// 	fmt.Fprintln(os.Stderr, globals.NoCommandError())
-	// 	flag.Usage()
-	// 	return
-	// }
-
-	// switch cmd := flag.Arg(0); cmd {
-	// case globals.DirectivesCommand:
-	// 	err := directives.Parse()
-	// 	if err != nil {
-	// 		fmt.Fprintln(os.Stderr, err)
-	// 		return
-	// 	}
-	// 	if err = directives.Execute(); err != nil {
-	// 		fmt.Fprintln(os.Stderr, err)
-	// 		return
-	// 	}
-	// case globals.HelpCommand:
-	// 	flag.Usage()
-	// default:
-	// 	fmt.Fprintln(os.Stderr, globals.UnknownCommandError(cmd))
-	// }
+	for _, arg := range args {
+		fmt.Printf("%q\n", arg)
+	}
 }

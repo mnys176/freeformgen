@@ -55,7 +55,7 @@ func assertNumber[T int | float64](t *testing.T, got, wantMin, wantMax T) {
 	}
 }
 
-func assertStr(t *testing.T, got string, wantMinLength, wantMaxLength int, wantCharset string) {
+func assertString(t *testing.T, got string, wantMinLength, wantMaxLength int, wantCharset string) {
 	pattern := fmt.Sprintf("[%s]{%d,%d}", wantCharset, wantMinLength, wantMaxLength)
 	if matches, _ := regexp.MatchString(pattern, got); !matches {
 		t.Errorf("got %q which does not match the pattern %q", got, pattern)

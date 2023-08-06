@@ -7,7 +7,7 @@ import (
 	"unicode/utf8"
 )
 
-func null() any {
+func nullDirective() any {
 	return nil
 }
 
@@ -22,7 +22,7 @@ func number[T int | float64](min, max T) T {
 	return T(num)
 }
 
-func str(minLength, maxLength int, charset string) string {
+func stringDirective(minLength, maxLength int, charset string) string {
 	if minLength < 0 || maxLength < 0 {
 		panic(freeformgenError{errors.New("string cannot have a negative length")})
 	}

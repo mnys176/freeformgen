@@ -11,15 +11,24 @@ func nullDirective() any {
 	return nil
 }
 
-func number[T int | float64](min, max T) T {
+func integerDirective(min, max int) int {
 	if min > max {
 		panic(freeformgenError{errors.New("min cannot exceed max")})
 	}
 	if min == max {
 		return min
 	}
-	num := rand.Float64()*(float64(max)-float64(min)) + float64(min)
-	return T(num)
+	return rand.Intn(max-min) + min
+}
+
+func floatDirective(min, max float64) float64 {
+	if min > max {
+		panic(freeformgenError{errors.New("min cannot exceed max")})
+	}
+	if min == max {
+		return min
+	}
+	return rand.Float64()*(float64(max)-float64(min)) + float64(min)
 }
 
 func stringDirective(minLength, maxLength int, charset string) string {

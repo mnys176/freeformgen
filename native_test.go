@@ -14,23 +14,43 @@ func (tester nullDirectiveTester) assertNil() func(*testing.T) {
 	}
 }
 
-type numberDirectiveTester[T int | float64] struct {
-	iMin   T
-	iMax   T
+type integerDirectiveTester struct {
+	iMin   int
+	iMax   int
 	oPanic error
 }
 
-func (tester numberDirectiveTester[T]) assertNumber() func(*testing.T) {
+func (tester integerDirectiveTester) assertNumber() func(*testing.T) {
 	return func(t *testing.T) {
-		got := number[T](tester.iMin, tester.iMax)
+		got := integerDirective(tester.iMin, tester.iMax)
 		assertNumber(t, got, tester.iMin, tester.iMax)
 	}
 }
 
-func (tester numberDirectiveTester[T]) assertMinGreaterThanMaxErrorPanic() func(*testing.T) {
+func (tester integerDirectiveTester) assertMinGreaterThanMaxErrorPanic() func(*testing.T) {
 	return func(t *testing.T) {
 		defer assertMinGreaterThanMaxPanic(t, tester.oPanic)
-		number[T](tester.iMin, tester.iMax)
+		integerDirective(tester.iMin, tester.iMax)
+	}
+}
+
+type floatDirectiveTester struct {
+	iMin   float64
+	iMax   float64
+	oPanic error
+}
+
+func (tester floatDirectiveTester) assertNumber() func(*testing.T) {
+	return func(t *testing.T) {
+		got := floatDirective(tester.iMin, tester.iMax)
+		assertNumber(t, got, tester.iMin, tester.iMax)
+	}
+}
+
+func (tester floatDirectiveTester) assertMinGreaterThanMaxErrorPanic() func(*testing.T) {
+	return func(t *testing.T) {
+		defer assertMinGreaterThanMaxPanic(t, tester.oPanic)
+		floatDirective(tester.iMin, tester.iMax)
 	}
 }
 
@@ -74,39 +94,42 @@ func TestNullDirective(t *testing.T) {
 	t.Run("baseline", nullDirectiveTester{}.assertNil())
 }
 
-func TestNumberDirective(t *testing.T) {
-	t.Run("baseline", numberDirectiveTester[float64]{
-		iMin: 0.0,
-		iMax: 1.0,
-	}.assertNumber())
-	t.Run("broad range", numberDirectiveTester[float64]{
-		iMin: -10.0,
-		iMax: 10.0,
-	}.assertNumber())
-	t.Run("equal", numberDirectiveTester[float64]{
-		iMin: 0.0,
-		iMax: 0.0,
-	}.assertNumber())
-	t.Run("min greater than max", numberDirectiveTester[float64]{
-		iMin:   10.0,
-		iMax:   -10.0,
-		oPanic: errors.New("freeformgen: min cannot exceed max"),
-	}.assertMinGreaterThanMaxErrorPanic())
-	t.Run("int baseline", numberDirectiveTester[int]{
+func TestIntegerDirective(t *testing.T) {
+	t.Run("baseline", integerDirectiveTester{
 		iMin: 0,
 		iMax: 1,
 	}.assertNumber())
-	t.Run("int broad range", numberDirectiveTester[int]{
+	t.Run("broad range", integerDirectiveTester{
 		iMin: -10,
 		iMax: 10,
 	}.assertNumber())
-	t.Run("int equal", numberDirectiveTester[int]{
+	t.Run("equal", integerDirectiveTester{
 		iMin: 0,
 		iMax: 0,
 	}.assertNumber())
-	t.Run("int min greater than max", numberDirectiveTester[int]{
+	t.Run("min greater than max", integerDirectiveTester{
 		iMin:   1,
 		iMax:   -1,
+		oPanic: errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxErrorPanic())
+}
+
+func TestFloatDirective(t *testing.T) {
+	t.Run("baseline", floatDirectiveTester{
+		iMin: 0.0,
+		iMax: 1.0,
+	}.assertNumber())
+	t.Run("broad range", floatDirectiveTester{
+		iMin: -10.0,
+		iMax: 10.0,
+	}.assertNumber())
+	t.Run("equal", floatDirectiveTester{
+		iMin: 0.0,
+		iMax: 0.0,
+	}.assertNumber())
+	t.Run("min greater than max", floatDirectiveTester{
+		iMin:   10.0,
+		iMax:   -10.0,
 		oPanic: errors.New("freeformgen: min cannot exceed max"),
 	}.assertMinGreaterThanMaxErrorPanic())
 }

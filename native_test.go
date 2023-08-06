@@ -34,6 +34,34 @@ func (tester numberTester[T]) assertMinGreaterThanMaxErrorPanic() func(*testing.
 	}
 }
 
+type strTester struct {
+	iMinLength int
+	iMaxLength int
+	iCharset   string
+	oPanic     error
+}
+
+func (tester strTester) assertStr() func(*testing.T) {
+	return func(t *testing.T) {
+		got := str(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		assertStr(t, got, tester.iMinLength, tester.iMaxLength, tester.iCharset)
+	}
+}
+
+func (tester strTester) assertMinGreaterThanMaxErrorPanic() func(*testing.T) {
+	return func(t *testing.T) {
+		defer assertMinGreaterThanMaxPanic(t, tester.oPanic)
+		str(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+	}
+}
+
+func (tester strTester) assertInvalidLengthErrorPanic() func(*testing.T) {
+	return func(t *testing.T) {
+		defer assertInvalidLengthPanic(t, tester.oPanic)
+		str(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+	}
+}
+
 func TestNull(t *testing.T) {
 	t.Run("baseline", nullTester{}.assertNil())
 }
@@ -72,5 +100,44 @@ func TestNumber(t *testing.T) {
 		iMin:   1,
 		iMax:   -1,
 		oPanic: errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxErrorPanic())
+}
+
+func TestStr(t *testing.T) {
+	t.Run("baseline", strTester{
+		iMinLength: 3,
+		iMaxLength: 6,
+		iCharset:   "abc",
+	}.assertStr())
+	t.Run("emojis", strTester{
+		iMinLength: 3,
+		iMaxLength: 6,
+		iCharset:   "🔴",
+		// iCharset:   "🔴🟡🟢",
+	}.assertStr())
+	t.Run("length of zero", strTester{
+		iMinLength: 0,
+		iMaxLength: 0,
+		iCharset:   "abc",
+	}.assertStr())
+	t.Run("equal lengths", strTester{
+		iMinLength: 6,
+		iMaxLength: 6,
+		iCharset:   "abc",
+	}.assertStr())
+	t.Run("invalid min length", strTester{
+		iMinLength: -1,
+		iMaxLength: 6,
+		oPanic:     errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthErrorPanic())
+	t.Run("invalid max length", strTester{
+		iMinLength: 3,
+		iMaxLength: -1,
+		oPanic:     errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthErrorPanic())
+	t.Run("min length greater than max length", strTester{
+		iMinLength: 6,
+		iMaxLength: 3,
+		oPanic:     errors.New("freeformgen: min length cannot exceed max length"),
 	}.assertMinGreaterThanMaxErrorPanic())
 }

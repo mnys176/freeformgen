@@ -44,3 +44,7 @@ func stringDirective(minLength, maxLength int, charset string) string {
 	}
 	return b.String()
 }
+
+func booleanDirective() bool {
+	return rand.Intn(2) == 1
+}

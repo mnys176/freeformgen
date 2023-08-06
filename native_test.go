@@ -62,6 +62,14 @@ func (tester stringDirectiveTester) assertInvalidLengthErrorPanic() func(*testin
 	}
 }
 
+// type booleanDirectiveTester struct{}
+
+// func (tester booleanDirectiveTester) assertBoolean() func(*testing.T) {
+// 	return func(t *testing.T) {
+// 		booleanDirective()
+// 	}
+// }
+
 func TestNullDirective(t *testing.T) {
 	t.Run("baseline", nullDirectiveTester{}.assertNil())
 }
@@ -140,3 +148,7 @@ func TestStringDirective(t *testing.T) {
 		oPanic:     errors.New("freeformgen: min length cannot exceed max length"),
 	}.assertMinGreaterThanMaxErrorPanic())
 }
+
+// func TestBooleanDirective(t *testing.T) {
+// 	t.Run("baseline", booleanDirectiveTester{}.assertBoolean())
+// }

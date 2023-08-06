@@ -112,8 +112,7 @@ func TestStr(t *testing.T) {
 	t.Run("emojis", strTester{
 		iMinLength: 3,
 		iMaxLength: 6,
-		iCharset:   "🔴",
-		// iCharset:   "🔴🟡🟢",
+		iCharset:   "🔴🟡🟢",
 	}.assertStr())
 	t.Run("length of zero", strTester{
 		iMinLength: 0,

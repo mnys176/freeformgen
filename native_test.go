@@ -23,7 +23,7 @@ type integerDirectiveTester struct {
 func (tester integerDirectiveTester) assertNumber() func(*testing.T) {
 	return func(t *testing.T) {
 		got := integerDirective(tester.iMin, tester.iMax)
-		assertNumber(t, got, tester.iMin, tester.iMax)
+		assertNumber[int](t, got, tester.iMin, tester.iMax)
 	}
 }
 
@@ -43,7 +43,7 @@ type floatDirectiveTester struct {
 func (tester floatDirectiveTester) assertNumber() func(*testing.T) {
 	return func(t *testing.T) {
 		got := floatDirective(tester.iMin, tester.iMax)
-		assertNumber(t, got, tester.iMin, tester.iMax)
+		assertNumber[float64](t, got, tester.iMin, tester.iMax)
 	}
 }
 
@@ -64,7 +64,7 @@ type stringDirectiveTester struct {
 func (tester stringDirectiveTester) assertString() func(*testing.T) {
 	return func(t *testing.T) {
 		got := stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
-		assertString(t, got, tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		assertString(t, got, tester.iMinLength, tester.iMaxLength)
 	}
 }
 

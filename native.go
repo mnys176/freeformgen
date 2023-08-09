@@ -11,40 +11,45 @@ func nullDirective() any {
 	return nil
 }
 
-func integerDirective(min, max int) int {
+func integerDirective(min, max int) (int, error) {
 	if min > max {
-		panic(freeformgenError{errors.New("min cannot exceed max")})
+		return 0, freeformgenError{errors.New("min cannot exceed max")}
 	}
 	if min == max {
-		return min
+		return min, nil
 	}
-	return rand.Intn(max-min+1) + min
+	return rand.Intn(max-min+1) + min, nil
 }
 
-func floatDirective(min, max float64) float64 {
+func floatDirective(min, max float64) (float64, error) {
 	if min > max {
-		panic(freeformgenError{errors.New("min cannot exceed max")})
+		return 0.0, freeformgenError{errors.New("min cannot exceed max")}
 	}
 	if min == max {
-		return min
+		return min, nil
 	}
-	return rand.Float64()*(float64(max)-float64(min)) + float64(min)
+	return rand.Float64()*(float64(max)-float64(min)) + float64(min), nil
 }
 
-func stringDirective(minLength, maxLength int, charset string) string {
+func stringDirective(minLength, maxLength int, charset string) (string, error) {
 	if minLength < 0 || maxLength < 0 {
-		panic(freeformgenError{errors.New("string cannot have a negative length")})
+		return "", freeformgenError{errors.New("string cannot have a negative length")}
 	}
 	if minLength > maxLength {
-		panic(freeformgenError{errors.New("min length cannot exceed max length")})
+		return "", freeformgenError{errors.New("min length cannot exceed max length")}
+	}
+
+	count, err := integerDirective(minLength, maxLength)
+	if err != nil {
+		return "", err
 	}
 
 	var b strings.Builder
-	for n := 0; n < integerDirective(minLength, maxLength); n++ {
+	for n := 0; n < count; n++ {
 		i := rand.Intn(utf8.RuneCountInString(charset))
 		b.WriteRune([]rune(charset)[i])
 	}
-	return b.String()
+	return b.String(), nil
 }
 
 func booleanDirective() bool {
@@ -62,18 +67,20 @@ const (
 
 func primitiveDirective() any {
 	// Primitives include integers, floats, strings, booleans, and null.
+	var p any
 	switch rand.Intn(5) {
 	case 0:
-		return integerDirective(minRandomInteger, maxRandomInteger)
+		p, _ = integerDirective(minRandomInteger, maxRandomInteger)
 	case 1:
-		return floatDirective(minRandomFloat, maxRandomFloat)
+		p, _ = floatDirective(minRandomFloat, maxRandomFloat)
 	case 2:
-		return stringDirective(0, maxRandomStringLength, randomCharset)
+		p, _ = stringDirective(0, maxRandomStringLength, randomCharset)
 	case 3:
-		return booleanDirective()
+		p = booleanDirective()
 	default:
-		return nil
+		p = nullDirective()
 	}
+	return p
 }
 
 // func vectorDirective(typ string, minLength, maxLength int) []any {
@@ -114,24 +121,26 @@ func primitiveDirective() any {
 // 		panic(freeformgenError{errors.New("matrix cannot have a negative number of columns")})
 // 	}
 
-// 	arr := make([]any, 0)
-// 	for i := 0; i < integerDirective(minLength, maxLength); i++ {
-// 		switch typ {
-// 		case "integer":
-// 			arr = append(arr, integerDirective(minRandomInteger, maxRandomInteger))
-// 		case "float":
-// 			arr = append(arr, floatDirective(minRandomFloat, maxRandomFloat))
-// 		case "string":
-// 			arr = append(arr, stringDirective(0, maxRandomStringLength, randomCharset))
-// 		case "boolean":
-// 			arr = append(arr, booleanDirective())
-// 		case "null":
-// 			arr = append(arr, nullDirective())
-// 		case "":
-// 			arr = append(arr, primitiveDirective())
-// 		default:
-// 			panic(freeformgenError{fmt.Errorf("unknown primitive %q", typ)})
-// 		}
-// 	}
-// 	return arr
+// arr := make([]any, 0)
+//
+//	for i := 0; i < integerDirective(minLength, maxLength); i++ {
+//		switch typ {
+//		case "integer":
+//			arr = append(arr, integerDirective(minRandomInteger, maxRandomInteger))
+//		case "float":
+//			arr = append(arr, floatDirective(minRandomFloat, maxRandomFloat))
+//		case "string":
+//			arr = append(arr, stringDirective(0, maxRandomStringLength, randomCharset))
+//		case "boolean":
+//			arr = append(arr, booleanDirective())
+//		case "null":
+//			arr = append(arr, nullDirective())
+//		case "":
+//			arr = append(arr, primitiveDirective())
+//		default:
+//			panic(freeformgenError{fmt.Errorf("unknown primitive %q", typ)})
+//		}
+//	}
+//
+// return arr
 // }

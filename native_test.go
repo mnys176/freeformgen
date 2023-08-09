@@ -10,48 +10,51 @@ type nullDirectiveTester struct{}
 
 func (tester nullDirectiveTester) assertNil() func(*testing.T) {
 	return func(t *testing.T) {
-		got := nullDirective()
-		assertNil(t, got)
+		nullDirective()
 	}
 }
 
 type integerDirectiveTester struct {
-	iMin   int
-	iMax   int
-	oPanic error
+	iMin int
+	iMax int
+	oErr error
 }
 
 func (tester integerDirectiveTester) assertNumber() func(*testing.T) {
 	return func(t *testing.T) {
-		got := integerDirective(tester.iMin, tester.iMax)
-		assertNumber(t, got, tester.iMin, tester.iMax)
+		got, oErr := integerDirective(tester.iMin, tester.iMax)
+		assertZeroed(t, oErr)
+		assertWildNumber(t, got, tester.iMin, tester.iMax)
 	}
 }
 
-func (tester integerDirectiveTester) assertMinGreaterThanMaxErrorPanic() func(*testing.T) {
+func (tester integerDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
 	return func(t *testing.T) {
-		defer assertMinGreaterThanMaxPanic(t, tester.oPanic)
-		integerDirective(tester.iMin, tester.iMax)
+		oInt, got := integerDirective(tester.iMin, tester.iMax)
+		assertZeroed(t, oInt)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
 	}
 }
 
 type floatDirectiveTester struct {
-	iMin   float64
-	iMax   float64
-	oPanic error
+	iMin float64
+	iMax float64
+	oErr error
 }
 
 func (tester floatDirectiveTester) assertNumber() func(*testing.T) {
 	return func(t *testing.T) {
-		got := floatDirective(tester.iMin, tester.iMax)
-		assertNumber(t, got, tester.iMin, tester.iMax)
+		got, oErr := floatDirective(tester.iMin, tester.iMax)
+		assertZeroed(t, oErr)
+		assertWildNumber(t, got, tester.iMin, tester.iMax)
 	}
 }
 
-func (tester floatDirectiveTester) assertMinGreaterThanMaxErrorPanic() func(*testing.T) {
+func (tester floatDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
 	return func(t *testing.T) {
-		defer assertMinGreaterThanMaxPanic(t, tester.oPanic)
-		floatDirective(tester.iMin, tester.iMax)
+		oFloat, got := floatDirective(tester.iMin, tester.iMax)
+		assertZeroed(t, oFloat)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
 	}
 }
 
@@ -59,27 +62,30 @@ type stringDirectiveTester struct {
 	iMinLength int
 	iMaxLength int
 	iCharset   string
-	oPanic     error
+	oErr       error
 }
 
 func (tester stringDirectiveTester) assertString() func(*testing.T) {
 	return func(t *testing.T) {
-		got := stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
-		assertString(t, got, tester.iMinLength, tester.iMaxLength)
+		got, oErr := stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		assertZeroed(t, oErr)
+		assertWildString(t, got, tester.iMinLength, tester.iMaxLength)
 	}
 }
 
-func (tester stringDirectiveTester) assertMinGreaterThanMaxErrorPanic() func(*testing.T) {
+func (tester stringDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
 	return func(t *testing.T) {
-		defer assertMinGreaterThanMaxPanic(t, tester.oPanic)
-		stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		oString, got := stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		assertZeroed(t, oString)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
 	}
 }
 
-func (tester stringDirectiveTester) assertInvalidLengthErrorPanic() func(*testing.T) {
+func (tester stringDirectiveTester) assertInvalidLengthError() func(*testing.T) {
 	return func(t *testing.T) {
-		defer assertInvalidLengthPanic(t, tester.oPanic)
-		stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		oString, got := stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		assertZeroed(t, oString)
+		assertInvalidLengthError(t, got, tester.oErr)
 	}
 }
 
@@ -96,7 +102,7 @@ type primitiveDirectiveTester struct{}
 func (tester primitiveDirectiveTester) assertPrimitive() func(*testing.T) {
 	return func(t *testing.T) {
 		got := primitiveDirective()
-		assertPrimitive(t, got)
+		assertWildPrimitive(t, got)
 	}
 }
 
@@ -122,12 +128,12 @@ func TestIntegerDirective(t *testing.T) {
 			iMin: 0,
 			iMax: 0,
 		}.assertNumber())
-		t.Run(fmt.Sprintf("%d min greater than max", i), integerDirectiveTester{
-			iMin:   1,
-			iMax:   -1,
-			oPanic: errors.New("freeformgen: min cannot exceed max"),
-		}.assertMinGreaterThanMaxErrorPanic())
 	}
+	t.Run("min greater than max", integerDirectiveTester{
+		iMin: 1,
+		iMax: -1,
+		oErr: errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxError())
 }
 
 func TestFloatDirective(t *testing.T) {
@@ -144,12 +150,12 @@ func TestFloatDirective(t *testing.T) {
 			iMin: 0.0,
 			iMax: 0.0,
 		}.assertNumber())
-		t.Run(fmt.Sprintf("%d min greater than max", i), floatDirectiveTester{
-			iMin:   10.0,
-			iMax:   -10.0,
-			oPanic: errors.New("freeformgen: min cannot exceed max"),
-		}.assertMinGreaterThanMaxErrorPanic())
 	}
+	t.Run("min greater than max", floatDirectiveTester{
+		iMin: 10.0,
+		iMax: -10.0,
+		oErr: errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxError())
 }
 
 func TestStringDirective(t *testing.T) {
@@ -174,22 +180,22 @@ func TestStringDirective(t *testing.T) {
 			iMaxLength: 6,
 			iCharset:   "abc",
 		}.assertString())
-		t.Run(fmt.Sprintf("%d invalid min length", i), stringDirectiveTester{
-			iMinLength: -1,
-			iMaxLength: 6,
-			oPanic:     errors.New("freeformgen: string cannot have a negative length"),
-		}.assertInvalidLengthErrorPanic())
-		t.Run(fmt.Sprintf("%d invalid max length", i), stringDirectiveTester{
-			iMinLength: 3,
-			iMaxLength: -1,
-			oPanic:     errors.New("freeformgen: string cannot have a negative length"),
-		}.assertInvalidLengthErrorPanic())
-		t.Run(fmt.Sprintf("%d min length greater than max length", i), stringDirectiveTester{
-			iMinLength: 6,
-			iMaxLength: 3,
-			oPanic:     errors.New("freeformgen: min length cannot exceed max length"),
-		}.assertMinGreaterThanMaxErrorPanic())
 	}
+	t.Run("invalid min length", stringDirectiveTester{
+		iMinLength: -1,
+		iMaxLength: 6,
+		oErr:       errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("invalid max length", stringDirectiveTester{
+		iMinLength: 3,
+		iMaxLength: -1,
+		oErr:       errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("min length greater than max length", stringDirectiveTester{
+		iMinLength: 6,
+		iMaxLength: 3,
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
 }
 
 func TestBooleanDirective(t *testing.T) {

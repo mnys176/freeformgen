@@ -61,3 +61,16 @@ func assertString(t *testing.T, got string, wantMinLength, wantMaxLength int) {
 		t.Errorf("got %q which does not match the pattern %q", got, pattern)
 	}
 }
+
+func assertPrimitive(t *testing.T, got any) {
+	switch got.(type) {
+	case int:
+	case float64:
+	case string:
+	case bool:
+	case nil:
+		break
+	default:
+		t.Errorf("got value of type %T which is not a primitive", got)
+	}
+}

@@ -45,6 +45,12 @@ func assertFalse(t *testing.T, got bool) {
 	}
 }
 
+func assertEmptySlice(t *testing.T, got []any) {
+	if len(got) > 0 {
+		t.Errorf("got %+v but should have gotten an empty slice", got)
+	}
+}
+
 func assertNil(t *testing.T, got any) {
 	if got != nil {
 		t.Errorf("got %+v but should have gotten nil", got)
@@ -60,6 +66,8 @@ func assertZeroed(t *testing.T, got any) {
 		assertEmptyString(t, got)
 	case bool:
 		assertFalse(t, got)
+	case []any:
+		assertEmptySlice(t, got)
 	default:
 		assertNil(t, got)
 	}
@@ -88,5 +96,19 @@ func assertWildPrimitive(t *testing.T, got any) {
 		break
 	default:
 		t.Errorf("got value of type %T which is not a primitive", got)
+	}
+}
+
+func assertWildVector(t *testing.T, got []any, wantMinLength, wantMaxLength int) {
+	if len(got) < wantMinLength || len(got) > wantMaxLength {
+		t.Fatalf(
+			"vector has a length of %d but should have a length in the range [%d,%d]",
+			len(got),
+			wantMinLength,
+			wantMaxLength,
+		)
+	}
+	for _, v := range got {
+		assertWildPrimitive(t, v)
 	}
 }

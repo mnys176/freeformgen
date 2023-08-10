@@ -106,6 +106,36 @@ func (tester primitiveDirectiveTester) assertPrimitive() func(*testing.T) {
 	}
 }
 
+type vectorDirectiveTester struct {
+	iMinLength int
+	iMaxLength int
+	oErr       error
+}
+
+func (tester vectorDirectiveTester) assertVector() func(*testing.T) {
+	return func(t *testing.T) {
+		got, oErr := vectorDirective(tester.iMinLength, tester.iMaxLength)
+		assertZeroed(t, oErr)
+		assertWildVector(t, got, tester.iMinLength, tester.iMaxLength)
+	}
+}
+
+func (tester vectorDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vectorDirective(tester.iMinLength, tester.iMaxLength)
+		assertZeroed(t, oVector)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
+	}
+}
+
+func (tester vectorDirectiveTester) assertInvalidLengthError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vectorDirective(tester.iMinLength, tester.iMaxLength)
+		assertZeroed(t, oVector)
+		assertInvalidLengthError(t, got, tester.oErr)
+	}
+}
+
 const limit int = 100
 
 func TestNullDirective(t *testing.T) {
@@ -206,4 +236,36 @@ func TestPrimitiveDirective(t *testing.T) {
 	for i := 0; i < limit; i++ {
 		t.Run(fmt.Sprintf("%d baseline", i), primitiveDirectiveTester{}.assertPrimitive())
 	}
+}
+
+func TestVectorDirective(t *testing.T) {
+	for i := 0; i < limit; i++ {
+		t.Run(fmt.Sprintf("%d baseline", i), vectorDirectiveTester{
+			iMinLength: 3,
+			iMaxLength: 6,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d length of zero", i), vectorDirectiveTester{
+			iMinLength: 0,
+			iMaxLength: 0,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d equal lengths", i), vectorDirectiveTester{
+			iMinLength: 6,
+			iMaxLength: 6,
+		}.assertVector())
+	}
+	t.Run("invalid min length", vectorDirectiveTester{
+		iMinLength: -1,
+		iMaxLength: 6,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("invalid max length", vectorDirectiveTester{
+		iMinLength: 3,
+		iMaxLength: -1,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("min length greater than max length", vectorDirectiveTester{
+		iMinLength: 6,
+		iMaxLength: 3,
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
 }

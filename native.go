@@ -83,35 +83,25 @@ func primitiveDirective() any {
 	return p
 }
 
-// func vectorDirective(typ string, minLength, maxLength int) []any {
-// 	if minLength < 0 || maxLength < 0 {
-// 		panic(freeformgenError{errors.New("vector cannot have a negative length")})
-// 	}
-// 	if minLength > maxLength {
-// 		panic(freeformgenError{errors.New("min length cannot exceed max length")})
-// 	}
+func vectorDirective(minLength, maxLength int) ([]any, error) {
+	if minLength < 0 || maxLength < 0 {
+		return nil, freeformgenError{errors.New("vector cannot have a negative length")}
+	}
+	if minLength > maxLength {
+		return nil, freeformgenError{errors.New("min length cannot exceed max length")}
+	}
 
-// 	vec := make([]any, 0)
-// 	for i := 0; i < integerDirective(minLength, maxLength); i++ {
-// 		switch typ {
-// 		case "integer":
-// 			vec = append(vec, integerDirective(minRandomInteger, maxRandomInteger))
-// 		case "float":
-// 			vec = append(vec, floatDirective(minRandomFloat, maxRandomFloat))
-// 		case "string":
-// 			vec = append(vec, stringDirective(0, maxRandomStringLength, randomCharset))
-// 		case "boolean":
-// 			vec = append(vec, booleanDirective())
-// 		case "null":
-// 			vec = append(vec, nullDirective())
-// 		case "":
-// 			vec = append(vec, primitiveDirective())
-// 		default:
-// 			panic(freeformgenError{fmt.Errorf("unknown primitive %q", typ)})
-// 		}
-// 	}
-// 	return vec
-// }
+	count, err := integerDirective(minLength, maxLength)
+	if err != nil {
+		return nil, err
+	}
+
+	vec := make([]any, 0)
+	for i := 0; i < count; i++ {
+		vec = append(vec, primitiveDirective())
+	}
+	return vec, nil
+}
 
 // func matrixDirective(typ string, minRows, maxRows, minCols, maxCols int) []any {
 // 	if minRows < 0 || maxRows < 0 {
@@ -143,4 +133,5 @@ func primitiveDirective() any {
 //	}
 //
 // return arr
+// return nil, nil
 // }

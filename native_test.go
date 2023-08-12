@@ -116,7 +116,7 @@ func (tester vPrimitiveDirectiveTester) assertVector() func(*testing.T) {
 	return func(t *testing.T) {
 		got, oErr := vPrimitiveDirective(tester.iMinLength, tester.iMaxLength)
 		assertZeroed(t, oErr)
-		assertWildVector(t, got, tester.iMinLength, tester.iMaxLength)
+		assertWildPrimitiveVector(t, got, tester.iMinLength, tester.iMaxLength)
 	}
 }
 
@@ -235,6 +235,38 @@ func TestPrimitiveDirective(t *testing.T) {
 		t.Run(fmt.Sprintf("%d baseline", i), primitiveDirectiveTester{}.assertPrimitive())
 	}
 }
+
+// func TestVNullDirective(t *testing.T) {
+// 	for i := 0; i < limit; i++ {
+// 		t.Run(fmt.Sprintf("%d baseline", i), vNullDirectiveTester{
+// 			iMinLength: 3,
+// 			iMaxLength: 6,
+// 		}.assertVector())
+// 		t.Run(fmt.Sprintf("%d length of zero", i), vNullDirectiveTester{
+// 			iMinLength: 0,
+// 			iMaxLength: 0,
+// 		}.assertVector())
+// 		t.Run(fmt.Sprintf("%d equal lengths", i), vNullDirectiveTester{
+// 			iMinLength: 6,
+// 			iMaxLength: 6,
+// 		}.assertVector())
+// 	}
+// 	t.Run("invalid min length", vNullDirectiveTester{
+// 		iMinLength: -1,
+// 		iMaxLength: 6,
+// 		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+// 	}.assertInvalidLengthError())
+// 	t.Run("invalid max length", vNullDirectiveTester{
+// 		iMinLength: 3,
+// 		iMaxLength: -1,
+// 		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+// 	}.assertInvalidLengthError())
+// 	t.Run("min length greater than max length", vNullDirectiveTester{
+// 		iMinLength: 6,
+// 		iMaxLength: 3,
+// 		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+// 	}.assertMinGreaterThanMaxError())
+// }
 
 func TestVPrimitiveDirective(t *testing.T) {
 	for i := 0; i < limit; i++ {

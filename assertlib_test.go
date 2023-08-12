@@ -45,7 +45,7 @@ func assertFalse(t *testing.T, got bool) {
 	}
 }
 
-func assertEmptySlice(t *testing.T, got []any) {
+func assertEmptySlice[T any](t *testing.T, got []T) {
 	if len(got) > 0 {
 		t.Errorf("got %+v but should have gotten an empty slice", got)
 	}
@@ -58,6 +58,7 @@ func assertNil(t *testing.T, got any) {
 }
 
 func assertZeroed(t *testing.T, got any) {
+	// TODO: Use reflection for this.
 	switch got := got.(type) {
 	case int:
 	case float64:
@@ -67,6 +68,10 @@ func assertZeroed(t *testing.T, got any) {
 	case bool:
 		assertFalse(t, got)
 	case []any:
+	case []int:
+	case []float64:
+	case []string:
+	case []bool:
 		assertEmptySlice(t, got)
 	default:
 		assertNil(t, got)
@@ -96,6 +101,59 @@ func assertWildPrimitive(t *testing.T, got any) {
 		break
 	default:
 		t.Errorf("got value of type %T which is not a primitive", got)
+	}
+}
+
+func assertWildNullVector(t *testing.T, got []any, wantMinLength, wantMaxLength int) {
+	if len(got) < wantMinLength || len(got) > wantMaxLength {
+		t.Fatalf(
+			"vector has a length of %d but should have a length in the range [%d,%d]",
+			len(got),
+			wantMinLength,
+			wantMaxLength,
+		)
+	}
+	for _, v := range got {
+		assertNil(t, v)
+	}
+}
+
+func assertWildNumberVector[T int | float64](t *testing.T, got []T, wantMinLength, wantMaxLength int, wantMin, wantMax T) {
+	if len(got) < wantMinLength || len(got) > wantMaxLength {
+		t.Fatalf(
+			"vector has a length of %d but should have a length in the range [%d,%d]",
+			len(got),
+			wantMinLength,
+			wantMaxLength,
+		)
+	}
+	for _, v := range got {
+		assertWildNumber(t, v, wantMin, wantMax)
+	}
+}
+
+func assertWildStringVector(t *testing.T, got []string, wantMinLength, wantMaxLength, wantMinStrLength, wantMaxStrLength int) {
+	if len(got) < wantMinLength || len(got) > wantMaxLength {
+		t.Fatalf(
+			"vector has a length of %d but should have a length in the range [%d,%d]",
+			len(got),
+			wantMinLength,
+			wantMaxLength,
+		)
+	}
+	for _, v := range got {
+		assertWildString(t, v, wantMinStrLength, wantMaxStrLength)
+	}
+}
+
+func assertWildBooleanVector(t *testing.T, got []bool, wantMinLength, wantMaxLength int) {
+	if len(got) < wantMinLength || len(got) > wantMaxLength {
+		t.Fatalf(
+			"vector has a length of %d but should have a length in the range [%d,%d]",
+			len(got),
+			wantMinLength,
+			wantMaxLength,
+		)
 	}
 }
 

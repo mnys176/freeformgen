@@ -39,11 +39,7 @@ func stringDirective(minLength, maxLength int, charset string) (string, error) {
 		return "", freeformgenError{errors.New("min length cannot exceed max length")}
 	}
 
-	count, err := integerDirective(minLength, maxLength)
-	if err != nil {
-		return "", err
-	}
-
+	count, _ := integerDirective(minLength, maxLength)
 	var b strings.Builder
 	for n := 0; n < count; n++ {
 		i := rand.Intn(utf8.RuneCountInString(charset))
@@ -61,6 +57,7 @@ const (
 	minRandomInteger      int     = -maxRandomInteger
 	maxRandomFloat        float64 = float64(maxRandomInteger)
 	minRandomFloat        float64 = -maxRandomFloat
+	minRandomStringLength int     = 0
 	maxRandomStringLength int     = 32
 	randomCharset         string  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
 )
@@ -74,13 +71,108 @@ func primitiveDirective() any {
 	case 1:
 		p, _ = floatDirective(minRandomFloat, maxRandomFloat)
 	case 2:
-		p, _ = stringDirective(0, maxRandomStringLength, randomCharset)
+		p, _ = stringDirective(minRandomStringLength, maxRandomStringLength, randomCharset)
 	case 3:
 		p = booleanDirective()
 	default:
 		p = nullDirective()
 	}
 	return p
+}
+
+func vNullDirective(minLength, maxLength int) ([]any, error) {
+	if minLength < 0 || maxLength < 0 {
+		return nil, freeformgenError{errors.New("vector cannot have a negative length")}
+	}
+	if minLength > maxLength {
+		return nil, freeformgenError{errors.New("min length cannot exceed max length")}
+	}
+
+	count, _ := integerDirective(minLength, maxLength)
+	vec := make([]any, 0)
+	for i := 0; i < count; i++ {
+		vec = append(vec, nullDirective())
+	}
+	return vec, nil
+}
+
+func vIntegerDirective(minLength, maxLength, min, max int) ([]int, error) {
+	if minLength < 0 || maxLength < 0 {
+		return nil, freeformgenError{errors.New("vector cannot have a negative length")}
+	}
+	if minLength > maxLength {
+		return nil, freeformgenError{errors.New("min length cannot exceed max length")}
+	}
+	if min > max {
+		return nil, freeformgenError{errors.New("min cannot exceed max")}
+	}
+
+	count, _ := integerDirective(minLength, maxLength)
+	vec := make([]int, 0)
+	for i := 0; i < count; i++ {
+		v, _ := integerDirective(min, max)
+		vec = append(vec, v)
+	}
+	return vec, nil
+}
+
+func vFloatDirective(minLength, maxLength int, min, max float64) ([]float64, error) {
+	if minLength < 0 || maxLength < 0 {
+		return nil, freeformgenError{errors.New("vector cannot have a negative length")}
+	}
+	if minLength > maxLength {
+		return nil, freeformgenError{errors.New("min length cannot exceed max length")}
+	}
+	if min > max {
+		return nil, freeformgenError{errors.New("min cannot exceed max")}
+	}
+
+	count, _ := integerDirective(minLength, maxLength)
+	vec := make([]float64, 0)
+	for i := 0; i < count; i++ {
+		v, _ := floatDirective(min, max)
+		vec = append(vec, v)
+	}
+	return vec, nil
+}
+
+func vStringDirective(minLength, maxLength, minStrLength, maxStrLength int, charset string) ([]string, error) {
+	if minLength < 0 || maxLength < 0 {
+		return nil, freeformgenError{errors.New("vector cannot have a negative length")}
+	}
+	if minLength > maxLength {
+		return nil, freeformgenError{errors.New("min length cannot exceed max length")}
+	}
+	if minStrLength < 0 || maxStrLength < 0 {
+		return nil, freeformgenError{errors.New("string cannot have a negative length")}
+	}
+	if minStrLength > maxStrLength {
+		return nil, freeformgenError{errors.New("min string length cannot exceed max string length")}
+	}
+
+	count, _ := integerDirective(minLength, maxLength)
+	vec := make([]string, 0)
+	for i := 0; i < count; i++ {
+		v, _ := stringDirective(minStrLength, maxStrLength, charset)
+		vec = append(vec, v)
+	}
+	return vec, nil
+}
+
+func vBooleanDirective(minLength, maxLength int) ([]bool, error) {
+	if minLength < 0 || maxLength < 0 {
+		return nil, freeformgenError{errors.New("vector cannot have a negative length")}
+	}
+	if minLength > maxLength {
+		return nil, freeformgenError{errors.New("min length cannot exceed max length")}
+	}
+
+	count, _ := integerDirective(minLength, maxLength)
+	vec := make([]bool, 0)
+	for i := 0; i < count; i++ {
+		vec = append(vec, booleanDirective())
+	}
+	return vec, nil
 }
 
 func vPrimitiveDirective(minLength, maxLength int) ([]any, error) {
@@ -91,11 +183,7 @@ func vPrimitiveDirective(minLength, maxLength int) ([]any, error) {
 		return nil, freeformgenError{errors.New("min length cannot exceed max length")}
 	}
 
-	count, err := integerDirective(minLength, maxLength)
-	if err != nil {
-		return nil, err
-	}
-
+	count, _ := integerDirective(minLength, maxLength)
 	vec := make([]any, 0)
 	for i := 0; i < count; i++ {
 		vec = append(vec, primitiveDirective())

@@ -83,7 +83,7 @@ func primitiveDirective() any {
 	return p
 }
 
-func vectorDirective(minLength, maxLength int) ([]any, error) {
+func vPrimitiveDirective(minLength, maxLength int) ([]any, error) {
 	if minLength < 0 || maxLength < 0 {
 		return nil, freeformgenError{errors.New("vector cannot have a negative length")}
 	}

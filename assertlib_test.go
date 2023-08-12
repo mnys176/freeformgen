@@ -99,7 +99,7 @@ func assertWildPrimitive(t *testing.T, got any) {
 	}
 }
 
-func assertWildVector(t *testing.T, got []any, wantMinLength, wantMaxLength int) {
+func assertWildPrimitiveVector(t *testing.T, got []any, wantMinLength, wantMaxLength int) {
 	if len(got) < wantMinLength || len(got) > wantMaxLength {
 		t.Fatalf(
 			"vector has a length of %d but should have a length in the range [%d,%d]",

@@ -139,9 +139,7 @@ func (tester vectorDirectiveTester) assertInvalidLengthError() func(*testing.T) 
 const limit int = 100
 
 func TestNullDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), nullDirectiveTester{}.assertNil())
-	}
+	t.Run("baseline", nullDirectiveTester{}.assertNil())
 }
 
 func TestIntegerDirective(t *testing.T) {

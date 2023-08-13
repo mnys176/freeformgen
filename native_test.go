@@ -89,6 +89,14 @@ func (tester stringDirectiveTester) assertInvalidLengthError() func(*testing.T) 
 	}
 }
 
+func (tester stringDirectiveTester) assertEmptyCharsetError() func(*testing.T) {
+	return func(t *testing.T) {
+		oString, got := stringDirective(tester.iMinLength, tester.iMaxLength, tester.iCharset)
+		assertZeroed(t, oString)
+		assertEmptyCharsetError(t, got, tester.oErr)
+	}
+}
+
 type booleanDirectiveTester struct{}
 
 func (tester booleanDirectiveTester) assertBoolean() func(*testing.T) {
@@ -230,6 +238,14 @@ func (tester vStringDirectiveTester) assertInvalidLengthError() func(*testing.T)
 		oVector, got := vStringDirective(tester.iMinLength, tester.iMaxLength, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
 		assertZeroed(t, oVector)
 		assertInvalidLengthError(t, got, tester.oErr)
+	}
+}
+
+func (tester vStringDirectiveTester) assertEmptyCharsetError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vStringDirective(tester.iMinLength, tester.iMaxLength, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
+		assertZeroed(t, oVector)
+		assertEmptyCharsetError(t, got, tester.oErr)
 	}
 }
 
@@ -381,6 +397,12 @@ func TestStringDirective(t *testing.T) {
 		iMaxLength: 3,
 		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
 	}.assertMinGreaterThanMaxError())
+	t.Run("empty charset", stringDirectiveTester{
+		iMinLength: 3,
+		iMaxLength: 6,
+		iCharset:   "",
+		oErr:       errors.New("freeformgen: charset cannot be empty"),
+	}.assertEmptyCharsetError())
 }
 
 func TestBooleanDirective(t *testing.T) {
@@ -598,6 +620,14 @@ func TestVStringDirective(t *testing.T) {
 		iMaxLength: 3,
 		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
 	}.assertMinGreaterThanMaxError())
+	t.Run("empty charset", vStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iMinLength:    3,
+		iMaxLength:    6,
+		iCharset:      "",
+		oErr:          errors.New("freeformgen: charset cannot be empty"),
+	}.assertEmptyCharsetError())
 }
 
 func TestVBooleanDirective(t *testing.T) {

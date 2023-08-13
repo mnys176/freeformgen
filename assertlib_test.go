@@ -27,6 +27,13 @@ func assertInvalidLengthError(t *testing.T, got, want error) {
 	assertError(t, got, want)
 }
 
+func assertEmptyCharsetError(t *testing.T, got, want error) {
+	if got == nil {
+		t.Fatal("no error returned with an empty charset")
+	}
+	assertError(t, got, want)
+}
+
 func assertZero[T int | float64](t *testing.T, got T) {
 	if float64(got) != 0.0 {
 		t.Errorf("got %v but should have gotten %v", got, T(0.0))

@@ -38,6 +38,9 @@ func stringDirective(minLength, maxLength int, charset string) (string, error) {
 	if minLength > maxLength {
 		return "", freeformgenError{errors.New("min length cannot exceed max length")}
 	}
+	if charset == "" {
+		return "", freeformgenError{errors.New("charset cannot be empty")}
+	}
 
 	count, _ := integerDirective(minLength, maxLength)
 	var b strings.Builder
@@ -148,6 +151,9 @@ func vStringDirective(minLength, maxLength, minStrLength, maxStrLength int, char
 	}
 	if minStrLength > maxStrLength {
 		return nil, freeformgenError{errors.New("min string length cannot exceed max string length")}
+	}
+	if charset == "" {
+		return nil, freeformgenError{errors.New("charset cannot be empty")}
 	}
 
 	count, _ := integerDirective(minLength, maxLength)

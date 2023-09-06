@@ -34,7 +34,7 @@ func assertInvalidRowCountError(t *testing.T, got, want error) {
 	assertError(t, got, want)
 }
 
-func assertInvalidColumnCountError(t *testing.T, got, want error) {
+func assertInvalidColCountError(t *testing.T, got, want error) {
 	if got == nil {
 		t.Fatal("no error returned with an invalid column count")
 	}
@@ -197,7 +197,7 @@ func assertWildPrimitiveVector(t *testing.T, got []any, wantMinLength, wantMaxLe
 	}
 }
 
-func assertWildNullMatrix(t *testing.T, got [][]any, wantMinRowCount, wantMaxRowCount, wantMinColumnCount, wantMaxColumnCount int) {
+func assertWildNullMatrix(t *testing.T, got [][]any, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int) {
 	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
 		t.Fatalf(
 			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
@@ -207,6 +207,20 @@ func assertWildNullMatrix(t *testing.T, got [][]any, wantMinRowCount, wantMaxRow
 		)
 	}
 	for _, r := range got {
-		assertWildNullVector(t, r, wantMinColumnCount, wantMaxColumnCount)
+		assertWildNullVector(t, r, wantMinColCount, wantMaxColCount)
+	}
+}
+
+func assertWildNumberMatrix[T int | float64](t *testing.T, got [][]T, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int, wantMin, wantMax T) {
+	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
+		t.Fatalf(
+			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
+			len(got),
+			wantMinRowCount,
+			wantMaxRowCount,
+		)
+	}
+	for _, r := range got {
+		assertWildNumberVector(t, r, wantMinColCount, wantMaxColCount, wantMin, wantMax)
 	}
 }

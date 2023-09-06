@@ -197,24 +197,50 @@ func vPrimitiveDirective(minLength, maxLength int) ([]any, error) {
 	return vec, nil
 }
 
-func mNullDirective(minRowCount, maxRowCount, minColumnCount, maxColumnCount int) ([][]any, error) {
+func mNullDirective(minRowCount, maxRowCount, minColCount, maxColCount int) ([][]any, error) {
 	if minRowCount < 0 || maxRowCount < 0 {
 		return nil, freeformgenError{errors.New("matrix cannot have a negative row count")}
 	}
-	if minColumnCount < 0 || maxColumnCount < 0 {
+	if minColCount < 0 || maxColCount < 0 {
 		return nil, freeformgenError{errors.New("matrix cannot have a negative column count")}
 	}
 	if minRowCount > maxRowCount {
 		return nil, freeformgenError{errors.New("min row count cannot exceed max row count")}
 	}
-	if minColumnCount > maxColumnCount {
+	if minColCount > maxColCount {
 		return nil, freeformgenError{errors.New("min column count cannot exceed max column count")}
 	}
 
 	rowCount, _ := integerDirective(minRowCount, maxRowCount)
 	mat := make([][]any, rowCount)
 	for r := 0; r < rowCount; r++ {
-		vec, _ := vNullDirective(minColumnCount, maxColumnCount)
+		vec, _ := vNullDirective(minColCount, maxColCount)
+		mat[r] = vec
+	}
+	return mat, nil
+}
+
+func mIntegerDirective(minRowCount, maxRowCount, minColCount, maxColCount, min, max int) ([][]int, error) {
+	if minRowCount < 0 || maxRowCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative row count")}
+	}
+	if minColCount < 0 || maxColCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative column count")}
+	}
+	if minRowCount > maxRowCount {
+		return nil, freeformgenError{errors.New("min row count cannot exceed max row count")}
+	}
+	if minColCount > maxColCount {
+		return nil, freeformgenError{errors.New("min column count cannot exceed max column count")}
+	}
+	if min > max {
+		return nil, freeformgenError{errors.New("min cannot exceed max")}
+	}
+
+	rowCount, _ := integerDirective(minRowCount, maxRowCount)
+	mat := make([][]int, rowCount)
+	for r := 0; r < rowCount; r++ {
+		vec, _ := vIntegerDirective(minColCount, maxColCount, min, max)
 		mat[r] = vec
 	}
 	return mat, nil

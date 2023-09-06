@@ -39,9 +39,6 @@ func init() {
 func main() {
 	flag.Parse()
 
-	// for i := 0; i < 1000; i++ {
-	// 	fmt.Println(vectorDirective("", 1, 3))
-	// }
 	// args := flag.Args()
 
 	// if len(args) == 0 {

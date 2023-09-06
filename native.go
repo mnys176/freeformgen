@@ -92,9 +92,9 @@ func vNullDirective(minLength, maxLength int) ([]any, error) {
 	}
 
 	count, _ := integerDirective(minLength, maxLength)
-	vec := make([]any, 0)
+	vec := make([]any, count)
 	for i := 0; i < count; i++ {
-		vec = append(vec, nullDirective())
+		vec[i] = nullDirective()
 	}
 	return vec, nil
 }
@@ -111,10 +111,10 @@ func vIntegerDirective(minLength, maxLength, min, max int) ([]int, error) {
 	}
 
 	count, _ := integerDirective(minLength, maxLength)
-	vec := make([]int, 0)
+	vec := make([]int, count)
 	for i := 0; i < count; i++ {
 		v, _ := integerDirective(min, max)
-		vec = append(vec, v)
+		vec[i] = v
 	}
 	return vec, nil
 }
@@ -131,10 +131,10 @@ func vFloatDirective(minLength, maxLength int, min, max float64) ([]float64, err
 	}
 
 	count, _ := integerDirective(minLength, maxLength)
-	vec := make([]float64, 0)
+	vec := make([]float64, count)
 	for i := 0; i < count; i++ {
 		v, _ := floatDirective(min, max)
-		vec = append(vec, v)
+		vec[i] = v
 	}
 	return vec, nil
 }
@@ -157,10 +157,10 @@ func vStringDirective(minLength, maxLength, minStrLength, maxStrLength int, char
 	}
 
 	count, _ := integerDirective(minLength, maxLength)
-	vec := make([]string, 0)
+	vec := make([]string, count)
 	for i := 0; i < count; i++ {
 		v, _ := stringDirective(minStrLength, maxStrLength, charset)
-		vec = append(vec, v)
+		vec[i] = v
 	}
 	return vec, nil
 }
@@ -174,9 +174,9 @@ func vBooleanDirective(minLength, maxLength int) ([]bool, error) {
 	}
 
 	count, _ := integerDirective(minLength, maxLength)
-	vec := make([]bool, 0)
+	vec := make([]bool, count)
 	for i := 0; i < count; i++ {
-		vec = append(vec, booleanDirective())
+		vec[i] = booleanDirective()
 	}
 	return vec, nil
 }
@@ -190,42 +190,32 @@ func vPrimitiveDirective(minLength, maxLength int) ([]any, error) {
 	}
 
 	count, _ := integerDirective(minLength, maxLength)
-	vec := make([]any, 0)
+	vec := make([]any, count)
 	for i := 0; i < count; i++ {
-		vec = append(vec, primitiveDirective())
+		vec[i] = primitiveDirective()
 	}
 	return vec, nil
 }
 
-// func matrixDirective(typ string, minRows, maxRows, minCols, maxCols int) []any {
-// 	if minRows < 0 || maxRows < 0 {
-// 		panic(freeformgenError{errors.New("matrix cannot have a negative number of rows")})
-// 	}
-// 	if minCols < 0 || maxCols < 0 {
-// 		panic(freeformgenError{errors.New("matrix cannot have a negative number of columns")})
-// 	}
+func mNullDirective(minRowCount, maxRowCount, minColumnCount, maxColumnCount int) ([][]any, error) {
+	if minRowCount < 0 || maxRowCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative row count")}
+	}
+	if minColumnCount < 0 || maxColumnCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative column count")}
+	}
+	if minRowCount > maxRowCount {
+		return nil, freeformgenError{errors.New("min row count cannot exceed max row count")}
+	}
+	if minColumnCount > maxColumnCount {
+		return nil, freeformgenError{errors.New("min column count cannot exceed max column count")}
+	}
 
-// arr := make([]any, 0)
-//
-//	for i := 0; i < integerDirective(minLength, maxLength); i++ {
-//		switch typ {
-//		case "integer":
-//			arr = append(arr, integerDirective(minRandomInteger, maxRandomInteger))
-//		case "float":
-//			arr = append(arr, floatDirective(minRandomFloat, maxRandomFloat))
-//		case "string":
-//			arr = append(arr, stringDirective(0, maxRandomStringLength, randomCharset))
-//		case "boolean":
-//			arr = append(arr, booleanDirective())
-//		case "null":
-//			arr = append(arr, nullDirective())
-//		case "":
-//			arr = append(arr, primitiveDirective())
-//		default:
-//			panic(freeformgenError{fmt.Errorf("unknown primitive %q", typ)})
-//		}
-//	}
-//
-// return arr
-// return nil, nil
-// }
+	rowCount, _ := integerDirective(minRowCount, maxRowCount)
+	mat := make([][]any, rowCount)
+	for r := 0; r < rowCount; r++ {
+		vec, _ := vNullDirective(minColumnCount, maxColumnCount)
+		mat[r] = vec
+	}
+	return mat, nil
+}

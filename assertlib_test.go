@@ -27,6 +27,20 @@ func assertInvalidLengthError(t *testing.T, got, want error) {
 	assertError(t, got, want)
 }
 
+func assertInvalidRowCountError(t *testing.T, got, want error) {
+	if got == nil {
+		t.Fatal("no error returned with an invalid row count")
+	}
+	assertError(t, got, want)
+}
+
+func assertInvalidColumnCountError(t *testing.T, got, want error) {
+	if got == nil {
+		t.Fatal("no error returned with an invalid column count")
+	}
+	assertError(t, got, want)
+}
+
 func assertEmptyCharsetError(t *testing.T, got, want error) {
 	if got == nil {
 		t.Fatal("no error returned with an empty charset")
@@ -75,10 +89,15 @@ func assertZeroed(t *testing.T, got any) {
 	case bool:
 		assertFalse(t, got)
 	case []any:
+	case [][]any:
 	case []int:
+	case [][]int:
 	case []float64:
+	case [][]float64:
 	case []string:
+	case [][]string:
 	case []bool:
+	case [][]bool:
 		assertEmptySlice(t, got)
 	default:
 		assertNil(t, got)
@@ -175,5 +194,19 @@ func assertWildPrimitiveVector(t *testing.T, got []any, wantMinLength, wantMaxLe
 	}
 	for _, v := range got {
 		assertWildPrimitive(t, v)
+	}
+}
+
+func assertWildNullMatrix(t *testing.T, got [][]any, wantMinRowCount, wantMaxRowCount, wantMinColumnCount, wantMaxColumnCount int) {
+	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
+		t.Fatalf(
+			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
+			len(got),
+			wantMinRowCount,
+			wantMaxRowCount,
+		)
+	}
+	for _, r := range got {
+		assertWildNullVector(t, r, wantMinColumnCount, wantMaxColumnCount)
 	}
 }

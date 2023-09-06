@@ -245,3 +245,29 @@ func mIntegerDirective(minRowCount, maxRowCount, minColCount, maxColCount, min, 
 	}
 	return mat, nil
 }
+
+func mFloatDirective(minRowCount, maxRowCount, minColCount, maxColCount int, min, max float64) ([][]float64, error) {
+	if minRowCount < 0 || maxRowCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative row count")}
+	}
+	if minColCount < 0 || maxColCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative column count")}
+	}
+	if minRowCount > maxRowCount {
+		return nil, freeformgenError{errors.New("min row count cannot exceed max row count")}
+	}
+	if minColCount > maxColCount {
+		return nil, freeformgenError{errors.New("min column count cannot exceed max column count")}
+	}
+	if min > max {
+		return nil, freeformgenError{errors.New("min cannot exceed max")}
+	}
+
+	rowCount, _ := integerDirective(minRowCount, maxRowCount)
+	mat := make([][]float64, rowCount)
+	for r := 0; r < rowCount; r++ {
+		vec, _ := vFloatDirective(minColCount, maxColCount, min, max)
+		mat[r] = vec
+	}
+	return mat, nil
+}

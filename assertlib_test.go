@@ -238,3 +238,17 @@ func assertWildStringMatrix(t *testing.T, got [][]string, wantMinRowCount, wantM
 		assertWildStringVector(t, r, wantMinColCount, wantMaxColCount, wantMinStrLength, wantMaxStrLength)
 	}
 }
+
+func assertWildBooleanMatrix(t *testing.T, got [][]bool, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int) {
+	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
+		t.Fatalf(
+			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
+			len(got),
+			wantMinRowCount,
+			wantMaxRowCount,
+		)
+	}
+	for _, r := range got {
+		assertWildBooleanVector(t, r, wantMinColCount, wantMaxColCount)
+	}
+}

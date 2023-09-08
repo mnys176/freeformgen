@@ -303,3 +303,26 @@ func mStringDirective(minRowCount, maxRowCount, minColCount, maxColCount, minStr
 	}
 	return mat, nil
 }
+
+func mBooleanDirective(minRowCount, maxRowCount, minColCount, maxColCount int) ([][]bool, error) {
+	if minRowCount < 0 || maxRowCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative row count")}
+	}
+	if minColCount < 0 || maxColCount < 0 {
+		return nil, freeformgenError{errors.New("matrix cannot have a negative column count")}
+	}
+	if minRowCount > maxRowCount {
+		return nil, freeformgenError{errors.New("min row count cannot exceed max row count")}
+	}
+	if minColCount > maxColCount {
+		return nil, freeformgenError{errors.New("min column count cannot exceed max column count")}
+	}
+
+	rowCount, _ := integerDirective(minRowCount, maxRowCount)
+	mat := make([][]bool, rowCount)
+	for r := 0; r < rowCount; r++ {
+		vec, _ := vBooleanDirective(minColCount, maxColCount)
+		mat[r] = vec
+	}
+	return mat, nil
+}

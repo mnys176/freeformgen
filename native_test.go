@@ -532,6 +532,46 @@ func (tester mBooleanDirectiveTester) assertInvalidColCountError() func(*testing
 	}
 }
 
+type mPrimitiveDirectiveTester struct {
+	iMinRows int
+	iMaxRows int
+	iMinCols int
+	iMaxCols int
+	oErr     error
+}
+
+func (tester mPrimitiveDirectiveTester) assertMatrix() func(*testing.T) {
+	return func(t *testing.T) {
+		got, oErr := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
+		assertZeroed(t, oErr)
+		assertWildPrimitiveMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
+	}
+}
+
+func (tester mPrimitiveDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
+		assertZeroed(t, oMatrix)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
+	}
+}
+
+func (tester mPrimitiveDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
+		assertZeroed(t, oMatrix)
+		assertInvalidRowCountError(t, got, tester.oErr)
+	}
+}
+
+func (tester mPrimitiveDirectiveTester) assertInvalidColCountError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
+		assertZeroed(t, oMatrix)
+		assertInvalidColCountError(t, got, tester.oErr)
+	}
+}
+
 const limit int = 10
 
 func TestNullDirective(t *testing.T) {
@@ -1430,6 +1470,77 @@ func TestMBooleanDirective(t *testing.T) {
 		oErr:     errors.New("freeformgen: min row count cannot exceed max row count"),
 	}.assertMinGreaterThanMaxError())
 	t.Run("min column count greater than max column count", mBooleanDirectiveTester{
+		iMinRows: 3,
+		iMaxRows: 6,
+		iMinCols: 6,
+		iMaxCols: 3,
+		oErr:     errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+}
+
+func TestMPrimitiveDirective(t *testing.T) {
+	for i := 0; i < limit; i++ {
+		t.Run(fmt.Sprintf("%d baseline", i), mPrimitiveDirectiveTester{
+			iMinRows: 3,
+			iMaxRows: 6,
+			iMinCols: 3,
+			iMaxCols: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d row count of zero", i), mPrimitiveDirectiveTester{
+			iMinRows: 0,
+			iMaxRows: 0,
+			iMinCols: 3,
+			iMaxCols: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d column count of zero", i), mPrimitiveDirectiveTester{
+			iMinRows: 3,
+			iMaxRows: 6,
+			iMinCols: 0,
+			iMaxCols: 0,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d square matrix", i), mPrimitiveDirectiveTester{
+			iMinRows: 6,
+			iMaxRows: 6,
+			iMinCols: 6,
+			iMaxCols: 6,
+		}.assertMatrix())
+	}
+	t.Run("invalid min row count", mPrimitiveDirectiveTester{
+		iMinRows: -1,
+		iMaxRows: 6,
+		iMinCols: 3,
+		iMaxCols: 6,
+		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("invalid max row count", mPrimitiveDirectiveTester{
+		iMinRows: 3,
+		iMaxRows: -1,
+		iMinCols: 3,
+		iMaxCols: 6,
+		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("invalid min column count", mPrimitiveDirectiveTester{
+		iMinRows: 3,
+		iMaxRows: 6,
+		iMinCols: -1,
+		iMaxCols: 6,
+		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("invalid max column count", mPrimitiveDirectiveTester{
+		iMinRows: 3,
+		iMaxRows: 6,
+		iMinCols: 3,
+		iMaxCols: -1,
+		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("min row count greater than max row count", mPrimitiveDirectiveTester{
+		iMinRows: 6,
+		iMaxRows: 3,
+		iMinCols: 3,
+		iMaxCols: 6,
+		oErr:     errors.New("freeformgen: min row count cannot exceed max row count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("min column count greater than max column count", mPrimitiveDirectiveTester{
 		iMinRows: 3,
 		iMaxRows: 6,
 		iMinCols: 6,

@@ -252,3 +252,17 @@ func assertWildBooleanMatrix(t *testing.T, got [][]bool, wantMinRowCount, wantMa
 		assertWildBooleanVector(t, r, wantMinColCount, wantMaxColCount)
 	}
 }
+
+func assertWildPrimitiveMatrix(t *testing.T, got [][]any, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int) {
+	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
+		t.Fatalf(
+			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
+			len(got),
+			wantMinRowCount,
+			wantMaxRowCount,
+		)
+	}
+	for _, r := range got {
+		assertWildPrimitiveVector(t, r, wantMinColCount, wantMaxColCount)
+	}
+}

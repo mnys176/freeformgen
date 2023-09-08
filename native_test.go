@@ -433,6 +433,65 @@ func (tester mFloatDirectiveTester) assertInvalidColCountError() func(*testing.T
 	}
 }
 
+type mStringDirectiveTester struct {
+	iMinStrLength int
+	iMaxStrLength int
+	iCharset      string
+	iMinRows      int
+	iMaxRows      int
+	iMinCols      int
+	iMaxCols      int
+	oErr          error
+}
+
+func (tester mStringDirectiveTester) assertMatrix() func(*testing.T) {
+	return func(t *testing.T) {
+		got, oErr := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
+		assertZeroed(t, oErr)
+		assertWildStringMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength)
+	}
+}
+
+func (tester mStringDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
+		assertZeroed(t, oMatrix)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
+	}
+}
+
+func (tester mStringDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
+		assertZeroed(t, oMatrix)
+		assertInvalidRowCountError(t, got, tester.oErr)
+	}
+}
+
+func (tester mStringDirectiveTester) assertInvalidColCountError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
+		assertZeroed(t, oMatrix)
+		assertInvalidColCountError(t, got, tester.oErr)
+	}
+}
+
+func (tester mStringDirectiveTester) assertInvalidStrLengthError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
+		assertZeroed(t, oMatrix)
+		assertInvalidLengthError(t, got, tester.oErr)
+	}
+}
+
+func (tester mStringDirectiveTester) assertEmptyCharsetError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
+		assertZeroed(t, oMatrix)
+		assertEmptyCharsetError(t, got, tester.oErr)
+	}
+}
+
 const limit int = 10
 
 func TestNullDirective(t *testing.T) {
@@ -1107,4 +1166,163 @@ func TestMFloatDirective(t *testing.T) {
 		iMax: -10.0,
 		oErr: errors.New("freeformgen: min cannot exceed max"),
 	}.assertMinGreaterThanMaxError())
+}
+
+func TestMStringDirective(t *testing.T) {
+	for i := 0; i < limit; i++ {
+		t.Run(fmt.Sprintf("%d baseline", i), mStringDirectiveTester{
+			iMinStrLength: 3,
+			iMaxStrLength: 6,
+			iCharset:      "abc",
+			iMinRows:      3,
+			iMaxRows:      6,
+			iMinCols:      3,
+			iMaxCols:      6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d row count of zero", i), mStringDirectiveTester{
+			iMinStrLength: 3,
+			iMaxStrLength: 6,
+			iCharset:      "abc",
+			iMinRows:      0,
+			iMaxRows:      0,
+			iMinCols:      3,
+			iMaxCols:      6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d column count of zero", i), mStringDirectiveTester{
+			iMinStrLength: 3,
+			iMaxStrLength: 6,
+			iCharset:      "abc",
+			iMinRows:      3,
+			iMaxRows:      6,
+			iMinCols:      0,
+			iMaxCols:      0,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d square matrix", i), mStringDirectiveTester{
+			iMinStrLength: 3,
+			iMaxStrLength: 6,
+			iCharset:      "abc",
+			iMinRows:      6,
+			iMaxRows:      6,
+			iMinCols:      6,
+			iMaxCols:      6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d emojis", i), mStringDirectiveTester{
+			iMinStrLength: 3,
+			iMaxStrLength: 6,
+			iCharset:      "🔴🟡🟢",
+			iMinRows:      3,
+			iMaxRows:      6,
+			iMinCols:      3,
+			iMaxCols:      6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string length of zero", i), mStringDirectiveTester{
+			iMinStrLength: 0,
+			iMaxStrLength: 0,
+			iCharset:      "abc",
+			iMinRows:      3,
+			iMaxRows:      6,
+			iMinCols:      3,
+			iMaxCols:      6,
+		}.assertMatrix())
+	}
+	t.Run("invalid min row count", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iCharset:      "abc",
+		iMinRows:      -1,
+		iMaxRows:      6,
+		iMinCols:      3,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("invalid max row count", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iCharset:      "abc",
+		iMinRows:      3,
+		iMaxRows:      -1,
+		iMinCols:      3,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("invalid min column count", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iCharset:      "abc",
+		iMinRows:      3,
+		iMaxRows:      6,
+		iMinCols:      -1,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("invalid max column count", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iCharset:      "abc",
+		iMinRows:      3,
+		iMaxRows:      6,
+		iMinCols:      3,
+		iMaxCols:      -1,
+		oErr:          errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("min row count greater than max row count", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iCharset:      "abc",
+		iMinRows:      6,
+		iMaxRows:      3,
+		iMinCols:      3,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: min row count cannot exceed max row count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("min column count greater than max column count", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iCharset:      "abc",
+		iMinRows:      3,
+		iMaxRows:      6,
+		iMinCols:      6,
+		iMaxCols:      3,
+		oErr:          errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("invalid min string length", mStringDirectiveTester{
+		iMinStrLength: -1,
+		iMaxStrLength: 6,
+		iCharset:      "abc",
+		iMinRows:      3,
+		iMaxRows:      6,
+		iMinCols:      3,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidStrLengthError())
+	t.Run("invalid max string length", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: -1,
+		iCharset:      "abc",
+		iMinRows:      3,
+		iMaxRows:      6,
+		iMinCols:      3,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidStrLengthError())
+	t.Run("min string length greater than max string length", mStringDirectiveTester{
+		iMinStrLength: 6,
+		iMaxStrLength: 3,
+		iCharset:      "abc",
+		iMinRows:      3,
+		iMaxRows:      6,
+		iMinCols:      3,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: min string length cannot exceed max string length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("empty charset", mStringDirectiveTester{
+		iMinStrLength: 3,
+		iMaxStrLength: 6,
+		iCharset:      "",
+		iMinRows:      3,
+		iMaxRows:      6,
+		iMinCols:      3,
+		iMaxCols:      6,
+		oErr:          errors.New("freeformgen: charset cannot be empty"),
+	}.assertEmptyCharsetError())
 }

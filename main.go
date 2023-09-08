@@ -39,6 +39,11 @@ func init() {
 func main() {
 	flag.Parse()
 
+	for i := 0; i < 100; i++ {
+		m, _ := mStringDirective(2, 2, 2, 2, 8, 8, "10")
+		fmt.Println(m)
+	}
+
 	// args := flag.Args()
 
 	// if len(args) == 0 {

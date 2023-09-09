@@ -6,14 +6,6 @@ import (
 	"testing"
 )
 
-type nullDirectiveTester struct{}
-
-func (tester nullDirectiveTester) assertNil() func(*testing.T) {
-	return func(t *testing.T) {
-		nullDirective()
-	}
-}
-
 type integerDirectiveTester struct {
 	iMin int
 	iMax int
@@ -111,201 +103,6 @@ func (tester primitiveDirectiveTester) assertPrimitive() func(*testing.T) {
 	return func(t *testing.T) {
 		got := primitiveDirective()
 		assertWildPrimitive(t, got)
-	}
-}
-
-type vNullDirectiveTester struct {
-	iMinLength int
-	iMaxLength int
-	oErr       error
-}
-
-func (tester vNullDirectiveTester) assertVector() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := vNullDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oErr)
-		assertWildNullVector(t, got, tester.iMinLength, tester.iMaxLength)
-	}
-}
-
-func (tester vNullDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vNullDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oVector)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester vNullDirectiveTester) assertInvalidLengthError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vNullDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oVector)
-		assertInvalidLengthError(t, got, tester.oErr)
-	}
-}
-
-type vIntegerDirectiveTester struct {
-	iMinLength int
-	iMaxLength int
-	iMin       int
-	iMax       int
-	oErr       error
-}
-
-func (tester vIntegerDirectiveTester) assertVector() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := vIntegerDirective(tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-		assertZeroed(t, oErr)
-		assertWildNumberVector(t, got, tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-	}
-}
-
-func (tester vIntegerDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vIntegerDirective(tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-		assertZeroed(t, oVector)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester vIntegerDirectiveTester) assertInvalidLengthError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vIntegerDirective(tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-		assertZeroed(t, oVector)
-		assertInvalidLengthError(t, got, tester.oErr)
-	}
-}
-
-type vFloatDirectiveTester struct {
-	iMinLength int
-	iMaxLength int
-	iMin       float64
-	iMax       float64
-	oErr       error
-}
-
-func (tester vFloatDirectiveTester) assertVector() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := vFloatDirective(tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-		assertZeroed(t, oErr)
-		assertWildNumberVector(t, got, tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-	}
-}
-
-func (tester vFloatDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vFloatDirective(tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-		assertZeroed(t, oVector)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester vFloatDirectiveTester) assertInvalidLengthError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vFloatDirective(tester.iMinLength, tester.iMaxLength, tester.iMin, tester.iMax)
-		assertZeroed(t, oVector)
-		assertInvalidLengthError(t, got, tester.oErr)
-	}
-}
-
-type vStringDirectiveTester struct {
-	iMinLength    int
-	iMaxLength    int
-	iMinStrLength int
-	iMaxStrLength int
-	iCharset      string
-	oErr          error
-}
-
-func (tester vStringDirectiveTester) assertVector() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := vStringDirective(tester.iMinLength, tester.iMaxLength, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oErr)
-		assertWildStringVector(t, got, tester.iMinLength, tester.iMaxLength, tester.iMinStrLength, tester.iMaxStrLength)
-	}
-}
-
-func (tester vStringDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vStringDirective(tester.iMinLength, tester.iMaxLength, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oVector)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester vStringDirectiveTester) assertInvalidLengthError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vStringDirective(tester.iMinLength, tester.iMaxLength, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oVector)
-		assertInvalidLengthError(t, got, tester.oErr)
-	}
-}
-
-func (tester vStringDirectiveTester) assertEmptyCharsetError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vStringDirective(tester.iMinLength, tester.iMaxLength, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oVector)
-		assertEmptyCharsetError(t, got, tester.oErr)
-	}
-}
-
-type vBooleanDirectiveTester struct {
-	iMinLength int
-	iMaxLength int
-	oErr       error
-}
-
-func (tester vBooleanDirectiveTester) assertVector() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := vBooleanDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oErr)
-		assertWildBooleanVector(t, got, tester.iMinLength, tester.iMaxLength)
-	}
-}
-
-func (tester vBooleanDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vBooleanDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oVector)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester vBooleanDirectiveTester) assertInvalidLengthError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vBooleanDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oVector)
-		assertInvalidLengthError(t, got, tester.oErr)
-	}
-}
-
-type vPrimitiveDirectiveTester struct {
-	iMinLength int
-	iMaxLength int
-	oErr       error
-}
-
-func (tester vPrimitiveDirectiveTester) assertVector() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := vPrimitiveDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oErr)
-		assertWildPrimitiveVector(t, got, tester.iMinLength, tester.iMaxLength)
-	}
-}
-
-func (tester vPrimitiveDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vPrimitiveDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oVector)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester vPrimitiveDirectiveTester) assertInvalidLengthError() func(*testing.T) {
-	return func(t *testing.T) {
-		oVector, got := vPrimitiveDirective(tester.iMinLength, tester.iMaxLength)
-		assertZeroed(t, oVector)
-		assertInvalidLengthError(t, got, tester.oErr)
 	}
 }
 
@@ -572,11 +369,55 @@ func (tester mPrimitiveDirectiveTester) assertInvalidColCountError() func(*testi
 	}
 }
 
-const limit int = 10
-
-func TestNullDirective(t *testing.T) {
-	t.Run("baseline", nullDirectiveTester{}.assertNil())
+type vectorOfDirectiveTester struct {
+	iTyp       string
+	iMinLength int
+	iMaxLength int
+	iArgs      []any
+	oErr       error
 }
+
+func (tester vectorOfDirectiveTester) assertVector() func(*testing.T) {
+	return func(t *testing.T) {
+		got, oErr := vectorOfDirective(tester.iTyp, tester.iMinLength, tester.iMaxLength, tester.iArgs...)
+		assertZeroed(t, oErr)
+		assertWildPrimitiveVector(t, got, tester.iMinLength, tester.iMaxLength)
+	}
+}
+
+func (tester vectorOfDirectiveTester) assertInvalidLengthError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vectorOfDirective(tester.iTyp, tester.iMinLength, tester.iMaxLength, tester.iArgs...)
+		assertZeroed(t, oVector)
+		assertInvalidLengthError(t, got, tester.oErr)
+	}
+}
+
+func (tester vectorOfDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vectorOfDirective(tester.iTyp, tester.iMinLength, tester.iMaxLength, tester.iArgs...)
+		assertZeroed(t, oVector)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
+	}
+}
+
+func (tester vectorOfDirectiveTester) assertIncorrectArgsError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vectorOfDirective(tester.iTyp, tester.iMinLength, tester.iMaxLength, tester.iArgs...)
+		assertZeroed(t, oVector)
+		assertIncorrectArgsError(t, got, tester.oErr)
+	}
+}
+
+func (tester vectorOfDirectiveTester) assertEmptyCharsetError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vectorOfDirective(tester.iTyp, tester.iMinLength, tester.iMaxLength, tester.iArgs...)
+		assertZeroed(t, oVector)
+		assertEmptyCharsetError(t, got, tester.oErr)
+	}
+}
+
+const limit int = 10
 
 func TestIntegerDirective(t *testing.T) {
 	for i := 0; i < limit; i++ {
@@ -676,285 +517,6 @@ func TestPrimitiveDirective(t *testing.T) {
 	for i := 0; i < limit; i++ {
 		t.Run(fmt.Sprintf("%d baseline", i), primitiveDirectiveTester{}.assertPrimitive())
 	}
-}
-
-func TestVNullDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), vNullDirectiveTester{
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d length of zero", i), vNullDirectiveTester{
-			iMinLength: 0,
-			iMaxLength: 0,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal lengths", i), vNullDirectiveTester{
-			iMinLength: 6,
-			iMaxLength: 6,
-		}.assertVector())
-	}
-	t.Run("invalid min length", vNullDirectiveTester{
-		iMinLength: -1,
-		iMaxLength: 6,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid max length", vNullDirectiveTester{
-		iMinLength: 3,
-		iMaxLength: -1,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("min length greater than max length", vNullDirectiveTester{
-		iMinLength: 6,
-		iMaxLength: 3,
-		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestVIntegerDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), vIntegerDirectiveTester{
-			iMin:       0,
-			iMax:       3,
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d broad range", i), vIntegerDirectiveTester{
-			iMin:       -10,
-			iMax:       10,
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal", i), vIntegerDirectiveTester{
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d length of zero", i), vIntegerDirectiveTester{
-			iMinLength: 0,
-			iMaxLength: 0,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal lengths", i), vIntegerDirectiveTester{
-			iMinLength: 6,
-			iMaxLength: 6,
-		}.assertVector())
-	}
-	t.Run("invalid min length", vIntegerDirectiveTester{
-		iMinLength: -1,
-		iMaxLength: 6,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid max length", vIntegerDirectiveTester{
-		iMinLength: 3,
-		iMaxLength: -1,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("min greater than max", vIntegerDirectiveTester{
-		iMin: 1,
-		iMax: -1,
-		oErr: errors.New("freeformgen: min cannot exceed max"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min length greater than max length", vIntegerDirectiveTester{
-		iMinLength: 6,
-		iMaxLength: 3,
-		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestVFloatDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), vFloatDirectiveTester{
-			iMin:       0.0,
-			iMax:       1.0,
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d broad range", i), vFloatDirectiveTester{
-			iMin:       -10.0,
-			iMax:       10.0,
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal", i), vFloatDirectiveTester{
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d length of zero", i), vFloatDirectiveTester{
-			iMinLength: 0,
-			iMaxLength: 0,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal lengths", i), vFloatDirectiveTester{
-			iMinLength: 6,
-			iMaxLength: 6,
-		}.assertVector())
-	}
-	t.Run("invalid min length", vFloatDirectiveTester{
-		iMinLength: -1,
-		iMaxLength: 6,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid max length", vFloatDirectiveTester{
-		iMinLength: 3,
-		iMaxLength: -1,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("min greater than max", vFloatDirectiveTester{
-		iMin: 1.0,
-		iMax: -1.0,
-		oErr: errors.New("freeformgen: min cannot exceed max"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min length greater than max length", vFloatDirectiveTester{
-		iMinLength: 6,
-		iMaxLength: 3,
-		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestVStringDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), vStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iMinLength:    3,
-			iMaxLength:    6,
-			iCharset:      "abc",
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d emojis", i), vStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iMinLength:    3,
-			iMaxLength:    6,
-			iCharset:      "🔴🟡🟢",
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d length of zero", i), vStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iMinLength:    0,
-			iMaxLength:    0,
-			iCharset:      "abc",
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal lengths", i), vStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iMinLength:    6,
-			iMaxLength:    6,
-			iCharset:      "abc",
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d string length of zero", i), vStringDirectiveTester{
-			iMinStrLength: 0,
-			iMaxStrLength: 0,
-			iMinLength:    3,
-			iMaxLength:    6,
-			iCharset:      "abc",
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal string lengths", i), vStringDirectiveTester{
-			iMinStrLength: 6,
-			iMaxStrLength: 6,
-			iMinLength:    3,
-			iMaxLength:    6,
-			iCharset:      "abc",
-		}.assertVector())
-	}
-	t.Run("invalid min length", vStringDirectiveTester{
-		iMinLength: -1,
-		iMaxLength: 6,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid max length", vStringDirectiveTester{
-		iMinLength: 3,
-		iMaxLength: -1,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid min string length", vStringDirectiveTester{
-		iMinStrLength: -1,
-		iMaxStrLength: 6,
-		oErr:          errors.New("freeformgen: string cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid max string length", vStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: -1,
-		oErr:          errors.New("freeformgen: string cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("min string length greater than max string length", vStringDirectiveTester{
-		iMinStrLength: 6,
-		iMaxStrLength: 3,
-		oErr:          errors.New("freeformgen: min string length cannot exceed max string length"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min length greater than max length", vStringDirectiveTester{
-		iMinLength: 6,
-		iMaxLength: 3,
-		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("empty charset", vStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iMinLength:    3,
-		iMaxLength:    6,
-		iCharset:      "",
-		oErr:          errors.New("freeformgen: charset cannot be empty"),
-	}.assertEmptyCharsetError())
-}
-
-func TestVBooleanDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), vBooleanDirectiveTester{
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d length of zero", i), vBooleanDirectiveTester{
-			iMinLength: 0,
-			iMaxLength: 0,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal lengths", i), vBooleanDirectiveTester{
-			iMinLength: 6,
-			iMaxLength: 6,
-		}.assertVector())
-	}
-	t.Run("invalid min length", vBooleanDirectiveTester{
-		iMinLength: -1,
-		iMaxLength: 6,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid max length", vBooleanDirectiveTester{
-		iMinLength: 3,
-		iMaxLength: -1,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("min length greater than max length", vBooleanDirectiveTester{
-		iMinLength: 6,
-		iMaxLength: 3,
-		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestVPrimitiveDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), vPrimitiveDirectiveTester{
-			iMinLength: 3,
-			iMaxLength: 6,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d length of zero", i), vPrimitiveDirectiveTester{
-			iMinLength: 0,
-			iMaxLength: 0,
-		}.assertVector())
-		t.Run(fmt.Sprintf("%d equal lengths", i), vPrimitiveDirectiveTester{
-			iMinLength: 6,
-			iMaxLength: 6,
-		}.assertVector())
-	}
-	t.Run("invalid min length", vPrimitiveDirectiveTester{
-		iMinLength: -1,
-		iMaxLength: 6,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("invalid max length", vPrimitiveDirectiveTester{
-		iMinLength: 3,
-		iMaxLength: -1,
-		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
-	}.assertInvalidLengthError())
-	t.Run("min length greater than max length", vPrimitiveDirectiveTester{
-		iMinLength: 6,
-		iMaxLength: 3,
-		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
-	}.assertMinGreaterThanMaxError())
 }
 
 func TestMNullDirective(t *testing.T) {
@@ -1546,5 +1108,337 @@ func TestMPrimitiveDirective(t *testing.T) {
 		iMinCols: 6,
 		iMaxCols: 3,
 		oErr:     errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+}
+
+func TestVectorOfDirective(t *testing.T) {
+	for i := 0; i < limit; i++ {
+		t.Run(fmt.Sprintf("%d null baseline", i), vectorOfDirectiveTester{
+			iTyp:       "null",
+			iMinLength: 3,
+			iMaxLength: 6,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d null length of zero", i), vectorOfDirectiveTester{
+			iTyp:       "null",
+			iMinLength: 0,
+			iMaxLength: 0,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d null equal lengths", i), vectorOfDirectiveTester{
+			iTyp:       "null",
+			iMinLength: 6,
+			iMaxLength: 6,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d int baseline", i), vectorOfDirectiveTester{
+			iTyp:       "int",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{0, 3},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d int length of zero", i), vectorOfDirectiveTester{
+			iTyp:       "int",
+			iMinLength: 0,
+			iMaxLength: 0,
+			iArgs:      []any{0, 3},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d int equal lengths", i), vectorOfDirectiveTester{
+			iTyp:       "int",
+			iMinLength: 6,
+			iMaxLength: 6,
+			iArgs:      []any{0, 3},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d int broad range", i), vectorOfDirectiveTester{
+			iTyp:       "int",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{-10, 10},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d int equal", i), vectorOfDirectiveTester{
+			iTyp:       "int",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{0, 0},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d float baseline", i), vectorOfDirectiveTester{
+			iTyp:       "float",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{0.0, 1.0},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d float length of zero", i), vectorOfDirectiveTester{
+			iTyp:       "float",
+			iMinLength: 0,
+			iMaxLength: 0,
+			iArgs:      []any{0.0, 1.0},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d float equal lengths", i), vectorOfDirectiveTester{
+			iTyp:       "float",
+			iMinLength: 6,
+			iMaxLength: 6,
+			iArgs:      []any{0.0, 1.0},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d float broad range", i), vectorOfDirectiveTester{
+			iTyp:       "float",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{-10.0, 10.0},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d float equal", i), vectorOfDirectiveTester{
+			iTyp:       "float",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{0.0, 0.0},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d string baseline", i), vectorOfDirectiveTester{
+			iTyp:       "string",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{3, 6, "abc"},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d string length of zero", i), vectorOfDirectiveTester{
+			iTyp:       "string",
+			iMinLength: 0,
+			iMaxLength: 0,
+			iArgs:      []any{3, 6, "abc"},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d string equal lengths", i), vectorOfDirectiveTester{
+			iTyp:       "string",
+			iMinLength: 6,
+			iMaxLength: 6,
+			iArgs:      []any{3, 6, "abc"},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d string emojis", i), vectorOfDirectiveTester{
+			iTyp:       "string",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{3, 6, "🔴🟡🟢"},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d string string length of zero", i), vectorOfDirectiveTester{
+			iTyp:       "string",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{0, 0, "abc"},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d string equal string lengths", i), vectorOfDirectiveTester{
+			iTyp:       "string",
+			iMinLength: 3,
+			iMaxLength: 6,
+			iArgs:      []any{6, 6, "abc"},
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d boolean baseline", i), vectorOfDirectiveTester{
+			iTyp:       "bool",
+			iMinLength: 3,
+			iMaxLength: 6,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d bool length of zero", i), vectorOfDirectiveTester{
+			iTyp:       "bool",
+			iMinLength: 0,
+			iMaxLength: 0,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d bool equal lengths", i), vectorOfDirectiveTester{
+			iTyp:       "bool",
+			iMinLength: 6,
+			iMaxLength: 6,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d primitive baseline", i), vectorOfDirectiveTester{
+			iTyp:       "primitive",
+			iMinLength: 3,
+			iMaxLength: 6,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d primitive length of zero", i), vectorOfDirectiveTester{
+			iTyp:       "primitive",
+			iMinLength: 0,
+			iMaxLength: 0,
+		}.assertVector())
+		t.Run(fmt.Sprintf("%d primitive equal lengths", i), vectorOfDirectiveTester{
+			iTyp:       "primitive",
+			iMinLength: 6,
+			iMaxLength: 6,
+		}.assertVector())
+	}
+	t.Run("null invalid min length", vectorOfDirectiveTester{
+		iTyp:       "null",
+		iMinLength: -1,
+		iMaxLength: 6,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("null invalid max length", vectorOfDirectiveTester{
+		iTyp:       "null",
+		iMinLength: 3,
+		iMaxLength: -1,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("null min length greater than max length", vectorOfDirectiveTester{
+		iTyp:       "null",
+		iMinLength: 6,
+		iMaxLength: 3,
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("int invalid min length", vectorOfDirectiveTester{
+		iTyp:       "int",
+		iMinLength: -1,
+		iMaxLength: 6,
+		iArgs:      []any{0, 3},
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("int invalid max length", vectorOfDirectiveTester{
+		iTyp:       "int",
+		iMinLength: 3,
+		iMaxLength: -1,
+		iArgs:      []any{0, 3},
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("int min length greater than max length", vectorOfDirectiveTester{
+		iTyp:       "int",
+		iMinLength: 6,
+		iMaxLength: 3,
+		iArgs:      []any{0, 3},
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("int min greater than max", vectorOfDirectiveTester{
+		iTyp:       "int",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{1, -1},
+		oErr:       errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("int incorrect args", vectorOfDirectiveTester{
+		iTyp:       "int",
+		iMinLength: 6,
+		iMaxLength: 3,
+		iArgs:      []any{1, -1, 24},
+		oErr:       errors.New("freeformgen: wrong number of args"),
+	}.assertIncorrectArgsError())
+	t.Run("float invalid min length", vectorOfDirectiveTester{
+		iTyp:       "float",
+		iMinLength: -1,
+		iMaxLength: 6,
+		iArgs:      []any{0.0, 1.0},
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("float invalid max length", vectorOfDirectiveTester{
+		iTyp:       "float",
+		iMinLength: 3,
+		iMaxLength: -1,
+		iArgs:      []any{0.0, 1.0},
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("float min length greater than max length", vectorOfDirectiveTester{
+		iTyp:       "float",
+		iMinLength: 6,
+		iMaxLength: 3,
+		iArgs:      []any{0.0, 1.0},
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("float min greater than max", vectorOfDirectiveTester{
+		iTyp:       "float",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{1.0, -1.0},
+		oErr:       errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("float incorrect args", vectorOfDirectiveTester{
+		iTyp:       "float",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{1.0, -1.0, 24.0},
+		oErr:       errors.New("freeformgen: wrong number of args"),
+	}.assertIncorrectArgsError())
+	t.Run("string invalid min length", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: -1,
+		iMaxLength: 6,
+		iArgs:      []any{3, 6, "abc"},
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("string invalid max length", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: 3,
+		iMaxLength: -1,
+		iArgs:      []any{3, 6, "abc"},
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("string min length greater than max length", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: 6,
+		iMaxLength: 3,
+		iArgs:      []any{3, 6, "abc"},
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("string invalid min string length", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{-1, 6, "abc"},
+		oErr:       errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("string invalid max string length", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{3, -1, "abc"},
+		oErr:       errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("string min string length greater than max string length", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{6, 3, "abc"},
+		oErr:       errors.New("freeformgen: min string length cannot exceed max string length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("string empty charset", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{3, 6, ""},
+		oErr:       errors.New("freeformgen: charset cannot be empty"),
+	}.assertEmptyCharsetError())
+	t.Run("string incorrect args", vectorOfDirectiveTester{
+		iTyp:       "string",
+		iMinLength: 3,
+		iMaxLength: 6,
+		iArgs:      []any{3, 6, "", "foo"},
+		oErr:       errors.New("freeformgen: wrong number of args"),
+	}.assertIncorrectArgsError())
+	t.Run("bool invalid min length", vectorOfDirectiveTester{
+		iTyp:       "bool",
+		iMinLength: -1,
+		iMaxLength: 6,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("bool invalid max length", vectorOfDirectiveTester{
+		iTyp:       "bool",
+		iMinLength: 3,
+		iMaxLength: -1,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("bool min length greater than max length", vectorOfDirectiveTester{
+		iTyp:       "bool",
+		iMinLength: 6,
+		iMaxLength: 3,
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("primitive invalid min length", vectorOfDirectiveTester{
+		iTyp:       "primitive",
+		iMinLength: -1,
+		iMaxLength: 6,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("primitive invalid max length", vectorOfDirectiveTester{
+		iTyp:       "primitive",
+		iMinLength: 3,
+		iMaxLength: -1,
+		oErr:       errors.New("freeformgen: vector cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("primitive min length greater than max length", vectorOfDirectiveTester{
+		iTyp:       "primitive",
+		iMinLength: 6,
+		iMaxLength: 3,
+		oErr:       errors.New("freeformgen: min length cannot exceed max length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("invalid type", vectorOfDirectiveTester{
+		iTyp:       "foo",
+		iMinLength: 6,
+		iMaxLength: 3,
+		oErr:       errors.New(`freeformgen: invalid type "foo"`),
 	}.assertMinGreaterThanMaxError())
 }

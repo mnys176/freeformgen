@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"text/template"
 
 	"github.com/mnys176/usage"
 )
@@ -39,9 +41,33 @@ func init() {
 func main() {
 	flag.Parse()
 
-	for i := 0; i < 100; i++ {
-		m, _ := mStringDirective(2, 2, 2, 2, 8, 8, "10")
-		fmt.Println(m)
+	tmpl := template.Must(template.New("").Funcs(template.FuncMap{
+		"foo": func(op string, args ...any) (any, error) {
+			switch op {
+			case "one":
+				if len(args) != 1 {
+					return nil, errors.New("wrong number of arguments")
+				}
+				return args[0].(int), nil
+			case "two":
+				if len(args) != 2 {
+					return nil, errors.New("wrong number of arguments")
+				}
+				return args[0].(int) + args[1].(int), nil
+			case "three":
+				if len(args) != 3 {
+					return nil, errors.New("wrong number of arguments")
+				}
+				return args[0].(int) + args[1].(int) + args[2].(int), nil
+			default:
+				return nil, errors.New("invalid operation")
+			}
+		},
+	}).Parse(`{{ foo "two" 1 2}}` + "\n"))
+
+	err := tmpl.Execute(os.Stdout, nil)
+	if err != nil {
+		panic(err)
 	}
 
 	// args := flag.Args()
@@ -56,6 +82,6 @@ func main() {
 	// 	fmt.Printf("%q\n", arg)
 	// }
 
-	fmt.Println("------------------------------")
+	// fmt.Println("------------------------------")
 
 }

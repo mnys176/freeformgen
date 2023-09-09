@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 	"testing"
 )
@@ -44,6 +45,13 @@ func assertInvalidColCountError(t *testing.T, got, want error) {
 func assertEmptyCharsetError(t *testing.T, got, want error) {
 	if got == nil {
 		t.Fatal("no error returned with an empty charset")
+	}
+	assertError(t, got, want)
+}
+
+func assertIncorrectArgsError(t *testing.T, got, want error) {
+	if got == nil {
+		t.Fatal("no error returned with incorrect template args")
 	}
 	assertError(t, got, want)
 }
@@ -183,16 +191,21 @@ func assertWildBooleanVector(t *testing.T, got []bool, wantMinLength, wantMaxLen
 	}
 }
 
-func assertWildPrimitiveVector(t *testing.T, got []any, wantMinLength, wantMaxLength int) {
-	if len(got) < wantMinLength || len(got) > wantMaxLength {
+func assertWildPrimitiveVector(t *testing.T, got any, wantMinLength, wantMaxLength int) {
+	v := reflect.ValueOf(got)
+	r := make([]any, v.Len())
+	for i := 0; i < v.Len(); i++ {
+		r[i] = v.Index(i).Interface()
+	}
+	if len(r) < wantMinLength || len(r) > wantMaxLength {
 		t.Fatalf(
 			"vector has a length of %d but should have a length in the range [%d,%d]",
-			len(got),
+			len(r),
 			wantMinLength,
 			wantMaxLength,
 		)
 	}
-	for _, v := range got {
+	for _, v := range r {
 		assertWildPrimitive(t, v)
 	}
 }

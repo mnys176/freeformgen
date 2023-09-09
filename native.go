@@ -2,14 +2,11 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"strings"
 	"unicode/utf8"
 )
-
-func nullDirective() any {
-	return nil
-}
 
 func integerDirective(min, max int) (int, error) {
 	if min > max {
@@ -78,7 +75,7 @@ func primitiveDirective() any {
 	case 3:
 		p = booleanDirective()
 	default:
-		p = nullDirective()
+		p = nil
 	}
 	return p
 }
@@ -94,7 +91,7 @@ func vNullDirective(minLength, maxLength int) ([]any, error) {
 	count, _ := integerDirective(minLength, maxLength)
 	vec := make([]any, count)
 	for i := 0; i < count; i++ {
-		vec[i] = nullDirective()
+		vec[i] = nil
 	}
 	return vec, nil
 }
@@ -348,4 +345,39 @@ func mPrimitiveDirective(minRowCount, maxRowCount, minColCount, maxColCount int)
 		mat[r] = vec
 	}
 	return mat, nil
+}
+
+func vectorOfDirective(typ string, minLength, maxLength int, args ...any) (any, error) {
+	switch typ {
+	case "null":
+		return vNullDirective(minLength, maxLength)
+	case "int":
+		if len(args) != 2 {
+			return nil, freeformgenError{errors.New("wrong number of args")}
+		}
+		min := args[0].(int)
+		max := args[1].(int)
+		return vIntegerDirective(minLength, maxLength, min, max)
+	case "float":
+		if len(args) != 2 {
+			return nil, freeformgenError{errors.New("wrong number of args")}
+		}
+		min := args[0].(float64)
+		max := args[1].(float64)
+		return vFloatDirective(minLength, maxLength, min, max)
+	case "string":
+		if len(args) != 3 {
+			return nil, freeformgenError{errors.New("wrong number of args")}
+		}
+		minStrLength := args[0].(int)
+		maxStrLength := args[1].(int)
+		charset := args[2].(string)
+		return vStringDirective(minLength, maxLength, minStrLength, maxStrLength, charset)
+	case "bool":
+		return vBooleanDirective(minLength, maxLength)
+	case "primitive":
+		return vPrimitiveDirective(minLength, maxLength)
+	default:
+		return nil, freeformgenError{fmt.Errorf("invalid type %q", typ)}
+	}
 }

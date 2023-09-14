@@ -94,7 +94,6 @@ func assertNil(t *testing.T, got any) {
 }
 
 func assertZeroed(t *testing.T, got any) {
-	// TODO: Use reflection for this.
 	switch got := got.(type) {
 	case int:
 	case float64:

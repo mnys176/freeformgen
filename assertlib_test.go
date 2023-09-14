@@ -56,6 +56,13 @@ func assertIncorrectArgsError(t *testing.T, got, want error) {
 	assertError(t, got, want)
 }
 
+func assertInvalidTypeError(t *testing.T, got, want error) {
+	if got == nil {
+		t.Fatal("no error returned with invalid type")
+	}
+	assertError(t, got, want)
+}
+
 func assertZero[T int | float64](t *testing.T, got T) {
 	if float64(got) != 0.0 {
 		t.Errorf("got %v but should have gotten %v", got, T(0.0))
@@ -138,59 +145,6 @@ func assertWildPrimitive(t *testing.T, got any) {
 	}
 }
 
-func assertWildNullVector(t *testing.T, got []any, wantMinLength, wantMaxLength int) {
-	if len(got) < wantMinLength || len(got) > wantMaxLength {
-		t.Fatalf(
-			"vector has a length of %d but should have a length in the range [%d,%d]",
-			len(got),
-			wantMinLength,
-			wantMaxLength,
-		)
-	}
-	for _, v := range got {
-		assertNil(t, v)
-	}
-}
-
-func assertWildNumberVector[T int | float64](t *testing.T, got []T, wantMinLength, wantMaxLength int, wantMin, wantMax T) {
-	if len(got) < wantMinLength || len(got) > wantMaxLength {
-		t.Fatalf(
-			"vector has a length of %d but should have a length in the range [%d,%d]",
-			len(got),
-			wantMinLength,
-			wantMaxLength,
-		)
-	}
-	for _, v := range got {
-		assertWildNumber(t, v, wantMin, wantMax)
-	}
-}
-
-func assertWildStringVector(t *testing.T, got []string, wantMinLength, wantMaxLength, wantMinStrLength, wantMaxStrLength int) {
-	if len(got) < wantMinLength || len(got) > wantMaxLength {
-		t.Fatalf(
-			"vector has a length of %d but should have a length in the range [%d,%d]",
-			len(got),
-			wantMinLength,
-			wantMaxLength,
-		)
-	}
-	for _, v := range got {
-		assertWildString(t, v, wantMinStrLength, wantMaxStrLength)
-	}
-}
-
-func assertWildBooleanVector(t *testing.T, got []bool, wantMinLength, wantMaxLength int) {
-	if len(got) < wantMinLength || len(got) > wantMaxLength {
-		t.Fatalf(
-			"vector has a length of %d but should have a length in the range [%d,%d]",
-			len(got),
-			wantMinLength,
-			wantMaxLength,
-		)
-	}
-}
-
 func assertWildPrimitiveVector(t *testing.T, got any, wantMinLength, wantMaxLength int) {
 	v := reflect.ValueOf(got)
 	r := make([]any, v.Len())
@@ -210,72 +164,25 @@ func assertWildPrimitiveVector(t *testing.T, got any, wantMinLength, wantMaxLeng
 	}
 }
 
-func assertWildNullMatrix(t *testing.T, got [][]any, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int) {
-	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
+func assertWildPrimitiveMatrix(t *testing.T, got any, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int) {
+	v := reflect.ValueOf(got)
+	r := make([][]any, v.Len())
+	for i := 0; i < v.Len(); i++ {
+		vv := reflect.ValueOf(v.Index(i).Interface())
+		r[i] = make([]any, vv.Len())
+		for j := 0; j < v.Index(i).Len(); j++ {
+			r[i][j] = v.Index(i).Index(j).Interface()
+		}
+	}
+	if len(r) < wantMinRowCount || len(r) > wantMaxRowCount {
 		t.Fatalf(
 			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
-			len(got),
+			len(r),
 			wantMinRowCount,
 			wantMaxRowCount,
 		)
 	}
-	for _, r := range got {
-		assertWildNullVector(t, r, wantMinColCount, wantMaxColCount)
-	}
-}
-
-func assertWildNumberMatrix[T int | float64](t *testing.T, got [][]T, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int, wantMin, wantMax T) {
-	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
-		t.Fatalf(
-			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
-			len(got),
-			wantMinRowCount,
-			wantMaxRowCount,
-		)
-	}
-	for _, r := range got {
-		assertWildNumberVector(t, r, wantMinColCount, wantMaxColCount, wantMin, wantMax)
-	}
-}
-
-func assertWildStringMatrix(t *testing.T, got [][]string, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount, wantMinStrLength, wantMaxStrLength int) {
-	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
-		t.Fatalf(
-			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
-			len(got),
-			wantMinRowCount,
-			wantMaxRowCount,
-		)
-	}
-	for _, r := range got {
-		assertWildStringVector(t, r, wantMinColCount, wantMaxColCount, wantMinStrLength, wantMaxStrLength)
-	}
-}
-
-func assertWildBooleanMatrix(t *testing.T, got [][]bool, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int) {
-	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
-		t.Fatalf(
-			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
-			len(got),
-			wantMinRowCount,
-			wantMaxRowCount,
-		)
-	}
-	for _, r := range got {
-		assertWildBooleanVector(t, r, wantMinColCount, wantMaxColCount)
-	}
-}
-
-func assertWildPrimitiveMatrix(t *testing.T, got [][]any, wantMinRowCount, wantMaxRowCount, wantMinColCount, wantMaxColCount int) {
-	if len(got) < wantMinRowCount || len(got) > wantMaxRowCount {
-		t.Fatalf(
-			"matrix has a row count of %d but should have a row count in the range [%d,%d]",
-			len(got),
-			wantMinRowCount,
-			wantMaxRowCount,
-		)
-	}
-	for _, r := range got {
+	for _, r := range r {
 		assertWildPrimitiveVector(t, r, wantMinColCount, wantMaxColCount)
 	}
 }

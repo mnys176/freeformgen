@@ -106,269 +106,6 @@ func (tester primitiveDirectiveTester) assertPrimitive() func(*testing.T) {
 	}
 }
 
-type mNullDirectiveTester struct {
-	iMinRows int
-	iMaxRows int
-	iMinCols int
-	iMaxCols int
-	oErr     error
-}
-
-func (tester mNullDirectiveTester) assertMatrix() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := mNullDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oErr)
-		assertWildNullMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-	}
-}
-
-func (tester mNullDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mNullDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester mNullDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mNullDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertInvalidRowCountError(t, got, tester.oErr)
-	}
-}
-
-func (tester mNullDirectiveTester) assertInvalidColCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mNullDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertInvalidColCountError(t, got, tester.oErr)
-	}
-}
-
-type mIntegerDirectiveTester struct {
-	iMin     int
-	iMax     int
-	iMinRows int
-	iMaxRows int
-	iMinCols int
-	iMaxCols int
-	oErr     error
-}
-
-func (tester mIntegerDirectiveTester) assertMatrix() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := mIntegerDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oErr)
-		assertWildNumberMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-	}
-}
-
-func (tester mIntegerDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mIntegerDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oMatrix)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester mIntegerDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mIntegerDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oMatrix)
-		assertInvalidRowCountError(t, got, tester.oErr)
-	}
-}
-
-func (tester mIntegerDirectiveTester) assertInvalidColCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mIntegerDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oMatrix)
-		assertInvalidColCountError(t, got, tester.oErr)
-	}
-}
-
-type mFloatDirectiveTester struct {
-	iMin     float64
-	iMax     float64
-	iMinRows int
-	iMaxRows int
-	iMinCols int
-	iMaxCols int
-	oErr     error
-}
-
-func (tester mFloatDirectiveTester) assertMatrix() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := mFloatDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oErr)
-		assertWildNumberMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-	}
-}
-
-func (tester mFloatDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mFloatDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oMatrix)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester mFloatDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mFloatDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oMatrix)
-		assertInvalidRowCountError(t, got, tester.oErr)
-	}
-}
-
-func (tester mFloatDirectiveTester) assertInvalidColCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mFloatDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMin, tester.iMax)
-		assertZeroed(t, oMatrix)
-		assertInvalidColCountError(t, got, tester.oErr)
-	}
-}
-
-type mStringDirectiveTester struct {
-	iMinStrLength int
-	iMaxStrLength int
-	iCharset      string
-	iMinRows      int
-	iMaxRows      int
-	iMinCols      int
-	iMaxCols      int
-	oErr          error
-}
-
-func (tester mStringDirectiveTester) assertMatrix() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oErr)
-		assertWildStringMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength)
-	}
-}
-
-func (tester mStringDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oMatrix)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester mStringDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oMatrix)
-		assertInvalidRowCountError(t, got, tester.oErr)
-	}
-}
-
-func (tester mStringDirectiveTester) assertInvalidColCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oMatrix)
-		assertInvalidColCountError(t, got, tester.oErr)
-	}
-}
-
-func (tester mStringDirectiveTester) assertInvalidStrLengthError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oMatrix)
-		assertInvalidLengthError(t, got, tester.oErr)
-	}
-}
-
-func (tester mStringDirectiveTester) assertEmptyCharsetError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mStringDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols, tester.iMinStrLength, tester.iMaxStrLength, tester.iCharset)
-		assertZeroed(t, oMatrix)
-		assertEmptyCharsetError(t, got, tester.oErr)
-	}
-}
-
-type mBooleanDirectiveTester struct {
-	iMinRows int
-	iMaxRows int
-	iMinCols int
-	iMaxCols int
-	oErr     error
-}
-
-func (tester mBooleanDirectiveTester) assertMatrix() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := mBooleanDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oErr)
-		assertWildBooleanMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-	}
-}
-
-func (tester mBooleanDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mBooleanDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester mBooleanDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mBooleanDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertInvalidRowCountError(t, got, tester.oErr)
-	}
-}
-
-func (tester mBooleanDirectiveTester) assertInvalidColCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mBooleanDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertInvalidColCountError(t, got, tester.oErr)
-	}
-}
-
-type mPrimitiveDirectiveTester struct {
-	iMinRows int
-	iMaxRows int
-	iMinCols int
-	iMaxCols int
-	oErr     error
-}
-
-func (tester mPrimitiveDirectiveTester) assertMatrix() func(*testing.T) {
-	return func(t *testing.T) {
-		got, oErr := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oErr)
-		assertWildPrimitiveMatrix(t, got, tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-	}
-}
-
-func (tester mPrimitiveDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertMinGreaterThanMaxError(t, got, tester.oErr)
-	}
-}
-
-func (tester mPrimitiveDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertInvalidRowCountError(t, got, tester.oErr)
-	}
-}
-
-func (tester mPrimitiveDirectiveTester) assertInvalidColCountError() func(*testing.T) {
-	return func(t *testing.T) {
-		oMatrix, got := mPrimitiveDirective(tester.iMinRows, tester.iMaxRows, tester.iMinCols, tester.iMaxCols)
-		assertZeroed(t, oMatrix)
-		assertInvalidColCountError(t, got, tester.oErr)
-	}
-}
-
 type vectorOfDirectiveTester struct {
 	iTyp       string
 	iMinLength int
@@ -414,6 +151,88 @@ func (tester vectorOfDirectiveTester) assertEmptyCharsetError() func(*testing.T)
 		oVector, got := vectorOfDirective(tester.iTyp, tester.iMinLength, tester.iMaxLength, tester.iArgs...)
 		assertZeroed(t, oVector)
 		assertEmptyCharsetError(t, got, tester.oErr)
+	}
+}
+
+func (tester vectorOfDirectiveTester) assertInvalidTypeError() func(*testing.T) {
+	return func(t *testing.T) {
+		oVector, got := vectorOfDirective(tester.iTyp, tester.iMinLength, tester.iMaxLength, tester.iArgs...)
+		assertZeroed(t, oVector)
+		assertInvalidTypeError(t, got, tester.oErr)
+	}
+}
+
+type matrixOfDirectiveTester struct {
+	iTyp         string
+	iMinRowCount int
+	iMaxRowCount int
+	iMinColCount int
+	iMaxColCount int
+	iArgs        []any
+	oErr         error
+}
+
+func (tester matrixOfDirectiveTester) assertMatrix() func(*testing.T) {
+	return func(t *testing.T) {
+		got, oErr := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oErr)
+		assertWildPrimitiveMatrix(t, got, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount)
+	}
+}
+
+func (tester matrixOfDirectiveTester) assertInvalidRowCountError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oMatrix)
+		assertInvalidRowCountError(t, got, tester.oErr)
+	}
+}
+
+func (tester matrixOfDirectiveTester) assertInvalidColCountError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oMatrix)
+		assertInvalidColCountError(t, got, tester.oErr)
+	}
+}
+
+func (tester matrixOfDirectiveTester) assertInvalidLengthError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oMatrix)
+		assertInvalidLengthError(t, got, tester.oErr)
+	}
+}
+
+func (tester matrixOfDirectiveTester) assertMinGreaterThanMaxError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oMatrix)
+		assertMinGreaterThanMaxError(t, got, tester.oErr)
+	}
+}
+
+func (tester matrixOfDirectiveTester) assertIncorrectArgsError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oMatrix)
+		assertIncorrectArgsError(t, got, tester.oErr)
+	}
+}
+
+func (tester matrixOfDirectiveTester) assertEmptyCharsetError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oMatrix)
+		assertEmptyCharsetError(t, got, tester.oErr)
+	}
+}
+
+func (tester matrixOfDirectiveTester) assertInvalidTypeError() func(*testing.T) {
+	return func(t *testing.T) {
+		oMatrix, got := matrixOfDirective(tester.iTyp, tester.iMinRowCount, tester.iMaxRowCount, tester.iMinColCount, tester.iMaxColCount, tester.iArgs...)
+		assertZeroed(t, oMatrix)
+		assertInvalidTypeError(t, got, tester.oErr)
 	}
 }
 
@@ -517,598 +336,6 @@ func TestPrimitiveDirective(t *testing.T) {
 	for i := 0; i < limit; i++ {
 		t.Run(fmt.Sprintf("%d baseline", i), primitiveDirectiveTester{}.assertPrimitive())
 	}
-}
-
-func TestMNullDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), mNullDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d row count of zero", i), mNullDirectiveTester{
-			iMinRows: 0,
-			iMaxRows: 0,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d column count of zero", i), mNullDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 0,
-			iMaxCols: 0,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d square matrix", i), mNullDirectiveTester{
-			iMinRows: 6,
-			iMaxRows: 6,
-			iMinCols: 6,
-			iMaxCols: 6,
-		}.assertMatrix())
-	}
-	t.Run("invalid min row count", mNullDirectiveTester{
-		iMinRows: -1,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid max row count", mNullDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: -1,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid min column count", mNullDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: -1,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("invalid max column count", mNullDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: -1,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("min row count greater than max row count", mNullDirectiveTester{
-		iMinRows: 6,
-		iMaxRows: 3,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: min row count cannot exceed max row count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min column count greater than max column count", mNullDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 6,
-		iMaxCols: 3,
-		oErr:     errors.New("freeformgen: min column count cannot exceed max column count"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestMIntegerDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), mIntegerDirectiveTester{
-			iMin:     0,
-			iMax:     3,
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d row count of zero", i), mIntegerDirectiveTester{
-			iMin:     0,
-			iMax:     3,
-			iMinRows: 0,
-			iMaxRows: 0,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d column count of zero", i), mIntegerDirectiveTester{
-			iMin:     0,
-			iMax:     3,
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 0,
-			iMaxCols: 0,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d square matrix", i), mIntegerDirectiveTester{
-			iMin:     0,
-			iMax:     3,
-			iMinRows: 6,
-			iMaxRows: 6,
-			iMinCols: 6,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d broad range", i), mIntegerDirectiveTester{
-			iMin:     -10,
-			iMax:     10,
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d equal", i), mIntegerDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-	}
-	t.Run("invalid min row count", mIntegerDirectiveTester{
-		iMin:     0,
-		iMax:     3,
-		iMinRows: -1,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid max row count", mIntegerDirectiveTester{
-		iMin:     0,
-		iMax:     3,
-		iMinRows: 3,
-		iMaxRows: -1,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid min column count", mIntegerDirectiveTester{
-		iMin:     0,
-		iMax:     3,
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: -1,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("invalid max column count", mIntegerDirectiveTester{
-		iMin:     0,
-		iMax:     3,
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: -1,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("min row count greater than max row count", mIntegerDirectiveTester{
-		iMin:     0,
-		iMax:     3,
-		iMinRows: 6,
-		iMaxRows: 3,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: min row count cannot exceed max row count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min column count greater than max column count", mIntegerDirectiveTester{
-		iMin:     0,
-		iMax:     3,
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 6,
-		iMaxCols: 3,
-		oErr:     errors.New("freeformgen: min column count cannot exceed max column count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min greater than max", mIntegerDirectiveTester{
-		iMin: 1,
-		iMax: -1,
-		oErr: errors.New("freeformgen: min cannot exceed max"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestMFloatDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), mFloatDirectiveTester{
-			iMin:     0.0,
-			iMax:     1.0,
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d row count of zero", i), mFloatDirectiveTester{
-			iMin:     0.0,
-			iMax:     1.0,
-			iMinRows: 0,
-			iMaxRows: 0,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d column count of zero", i), mFloatDirectiveTester{
-			iMin:     0.0,
-			iMax:     1.0,
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 0,
-			iMaxCols: 0,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d square matrix", i), mFloatDirectiveTester{
-			iMin:     0.0,
-			iMax:     1.0,
-			iMinRows: 6,
-			iMaxRows: 6,
-			iMinCols: 6,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d broad range", i), mFloatDirectiveTester{
-			iMin:     -10.0,
-			iMax:     10.0,
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d equal", i), mFloatDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-	}
-	t.Run("invalid min row count", mFloatDirectiveTester{
-		iMin:     0.0,
-		iMax:     1.0,
-		iMinRows: -1,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid max row count", mFloatDirectiveTester{
-		iMin:     0.0,
-		iMax:     1.0,
-		iMinRows: 3,
-		iMaxRows: -1,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid min column count", mFloatDirectiveTester{
-		iMin:     0.0,
-		iMax:     1.0,
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: -1,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("invalid max column count", mFloatDirectiveTester{
-		iMin:     0.0,
-		iMax:     1.0,
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: -1,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("min row count greater than max row count", mFloatDirectiveTester{
-		iMin:     0.0,
-		iMax:     1.0,
-		iMinRows: 6,
-		iMaxRows: 3,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: min row count cannot exceed max row count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min column count greater than max column count", mFloatDirectiveTester{
-		iMin:     0.0,
-		iMax:     1.0,
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 6,
-		iMaxCols: 3,
-		oErr:     errors.New("freeformgen: min column count cannot exceed max column count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min greater than max", mFloatDirectiveTester{
-		iMin: 10.0,
-		iMax: -10.0,
-		oErr: errors.New("freeformgen: min cannot exceed max"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestMStringDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), mStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iCharset:      "abc",
-			iMinRows:      3,
-			iMaxRows:      6,
-			iMinCols:      3,
-			iMaxCols:      6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d row count of zero", i), mStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iCharset:      "abc",
-			iMinRows:      0,
-			iMaxRows:      0,
-			iMinCols:      3,
-			iMaxCols:      6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d column count of zero", i), mStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iCharset:      "abc",
-			iMinRows:      3,
-			iMaxRows:      6,
-			iMinCols:      0,
-			iMaxCols:      0,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d square matrix", i), mStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iCharset:      "abc",
-			iMinRows:      6,
-			iMaxRows:      6,
-			iMinCols:      6,
-			iMaxCols:      6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d emojis", i), mStringDirectiveTester{
-			iMinStrLength: 3,
-			iMaxStrLength: 6,
-			iCharset:      "🔴🟡🟢",
-			iMinRows:      3,
-			iMaxRows:      6,
-			iMinCols:      3,
-			iMaxCols:      6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d string length of zero", i), mStringDirectiveTester{
-			iMinStrLength: 0,
-			iMaxStrLength: 0,
-			iCharset:      "abc",
-			iMinRows:      3,
-			iMaxRows:      6,
-			iMinCols:      3,
-			iMaxCols:      6,
-		}.assertMatrix())
-	}
-	t.Run("invalid min row count", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iCharset:      "abc",
-		iMinRows:      -1,
-		iMaxRows:      6,
-		iMinCols:      3,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid max row count", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iCharset:      "abc",
-		iMinRows:      3,
-		iMaxRows:      -1,
-		iMinCols:      3,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid min column count", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iCharset:      "abc",
-		iMinRows:      3,
-		iMaxRows:      6,
-		iMinCols:      -1,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("invalid max column count", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iCharset:      "abc",
-		iMinRows:      3,
-		iMaxRows:      6,
-		iMinCols:      3,
-		iMaxCols:      -1,
-		oErr:          errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("min row count greater than max row count", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iCharset:      "abc",
-		iMinRows:      6,
-		iMaxRows:      3,
-		iMinCols:      3,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: min row count cannot exceed max row count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min column count greater than max column count", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iCharset:      "abc",
-		iMinRows:      3,
-		iMaxRows:      6,
-		iMinCols:      6,
-		iMaxCols:      3,
-		oErr:          errors.New("freeformgen: min column count cannot exceed max column count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("invalid min string length", mStringDirectiveTester{
-		iMinStrLength: -1,
-		iMaxStrLength: 6,
-		iCharset:      "abc",
-		iMinRows:      3,
-		iMaxRows:      6,
-		iMinCols:      3,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: string cannot have a negative length"),
-	}.assertInvalidStrLengthError())
-	t.Run("invalid max string length", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: -1,
-		iCharset:      "abc",
-		iMinRows:      3,
-		iMaxRows:      6,
-		iMinCols:      3,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: string cannot have a negative length"),
-	}.assertInvalidStrLengthError())
-	t.Run("min string length greater than max string length", mStringDirectiveTester{
-		iMinStrLength: 6,
-		iMaxStrLength: 3,
-		iCharset:      "abc",
-		iMinRows:      3,
-		iMaxRows:      6,
-		iMinCols:      3,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: min string length cannot exceed max string length"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("empty charset", mStringDirectiveTester{
-		iMinStrLength: 3,
-		iMaxStrLength: 6,
-		iCharset:      "",
-		iMinRows:      3,
-		iMaxRows:      6,
-		iMinCols:      3,
-		iMaxCols:      6,
-		oErr:          errors.New("freeformgen: charset cannot be empty"),
-	}.assertEmptyCharsetError())
-}
-
-func TestMBooleanDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), mBooleanDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d row count of zero", i), mBooleanDirectiveTester{
-			iMinRows: 0,
-			iMaxRows: 0,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d column count of zero", i), mBooleanDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 0,
-			iMaxCols: 0,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d square matrix", i), mBooleanDirectiveTester{
-			iMinRows: 6,
-			iMaxRows: 6,
-			iMinCols: 6,
-			iMaxCols: 6,
-		}.assertMatrix())
-	}
-	t.Run("invalid min row count", mBooleanDirectiveTester{
-		iMinRows: -1,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid max row count", mBooleanDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: -1,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid min column count", mBooleanDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: -1,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("invalid max column count", mBooleanDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: -1,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("min row count greater than max row count", mBooleanDirectiveTester{
-		iMinRows: 6,
-		iMaxRows: 3,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: min row count cannot exceed max row count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min column count greater than max column count", mBooleanDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 6,
-		iMaxCols: 3,
-		oErr:     errors.New("freeformgen: min column count cannot exceed max column count"),
-	}.assertMinGreaterThanMaxError())
-}
-
-func TestMPrimitiveDirective(t *testing.T) {
-	for i := 0; i < limit; i++ {
-		t.Run(fmt.Sprintf("%d baseline", i), mPrimitiveDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d row count of zero", i), mPrimitiveDirectiveTester{
-			iMinRows: 0,
-			iMaxRows: 0,
-			iMinCols: 3,
-			iMaxCols: 6,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d column count of zero", i), mPrimitiveDirectiveTester{
-			iMinRows: 3,
-			iMaxRows: 6,
-			iMinCols: 0,
-			iMaxCols: 0,
-		}.assertMatrix())
-		t.Run(fmt.Sprintf("%d square matrix", i), mPrimitiveDirectiveTester{
-			iMinRows: 6,
-			iMaxRows: 6,
-			iMinCols: 6,
-			iMaxCols: 6,
-		}.assertMatrix())
-	}
-	t.Run("invalid min row count", mPrimitiveDirectiveTester{
-		iMinRows: -1,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid max row count", mPrimitiveDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: -1,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative row count"),
-	}.assertInvalidRowCountError())
-	t.Run("invalid min column count", mPrimitiveDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: -1,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("invalid max column count", mPrimitiveDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 3,
-		iMaxCols: -1,
-		oErr:     errors.New("freeformgen: matrix cannot have a negative column count"),
-	}.assertInvalidColCountError())
-	t.Run("min row count greater than max row count", mPrimitiveDirectiveTester{
-		iMinRows: 6,
-		iMaxRows: 3,
-		iMinCols: 3,
-		iMaxCols: 6,
-		oErr:     errors.New("freeformgen: min row count cannot exceed max row count"),
-	}.assertMinGreaterThanMaxError())
-	t.Run("min column count greater than max column count", mPrimitiveDirectiveTester{
-		iMinRows: 3,
-		iMaxRows: 6,
-		iMinCols: 6,
-		iMaxCols: 3,
-		oErr:     errors.New("freeformgen: min column count cannot exceed max column count"),
-	}.assertMinGreaterThanMaxError())
 }
 
 func TestVectorOfDirective(t *testing.T) {
@@ -1305,7 +532,7 @@ func TestVectorOfDirective(t *testing.T) {
 		iTyp:       "int",
 		iMinLength: 6,
 		iMaxLength: 3,
-		iArgs:      []any{1, -1, 24},
+		iArgs:      []any{0, 3, 24},
 		oErr:       errors.New("freeformgen: wrong number of args"),
 	}.assertIncorrectArgsError())
 	t.Run("float invalid min length", vectorOfDirectiveTester{
@@ -1340,7 +567,7 @@ func TestVectorOfDirective(t *testing.T) {
 		iTyp:       "float",
 		iMinLength: 3,
 		iMaxLength: 6,
-		iArgs:      []any{1.0, -1.0, 24.0},
+		iArgs:      []any{0.0, 1.0, 24.0},
 		oErr:       errors.New("freeformgen: wrong number of args"),
 	}.assertIncorrectArgsError())
 	t.Run("string invalid min length", vectorOfDirectiveTester{
@@ -1440,5 +667,641 @@ func TestVectorOfDirective(t *testing.T) {
 		iMinLength: 6,
 		iMaxLength: 3,
 		oErr:       errors.New(`freeformgen: invalid type "foo"`),
+	}.assertInvalidTypeError())
+}
+
+func TestMatrixOfDirective(t *testing.T) {
+	for i := 0; i < limit; i++ {
+		t.Run(fmt.Sprintf("%d null baseline", i), matrixOfDirectiveTester{
+			iTyp:         "null",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d null row count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "null",
+			iMinRowCount: 0,
+			iMaxRowCount: 0,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d null column count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "null",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 0,
+			iMaxColCount: 0,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d null square matrix", i), matrixOfDirectiveTester{
+			iTyp:         "null",
+			iMinRowCount: 6,
+			iMaxRowCount: 6,
+			iMinColCount: 6,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d int baseline", i), matrixOfDirectiveTester{
+			iTyp:         "int",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{0, 3},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d int row count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "int",
+			iMinRowCount: 0,
+			iMaxRowCount: 0,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{0, 3},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d int column count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "int",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 0,
+			iMaxColCount: 0,
+			iArgs:        []any{0, 3},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d int square matrix", i), matrixOfDirectiveTester{
+			iTyp:         "int",
+			iMinRowCount: 6,
+			iMaxRowCount: 6,
+			iMinColCount: 6,
+			iMaxColCount: 6,
+			iArgs:        []any{0, 3},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d int broad range", i), matrixOfDirectiveTester{
+			iTyp:         "int",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{-10, 10},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d int equal", i), matrixOfDirectiveTester{
+			iTyp:         "int",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{0, 0},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d float baseline", i), matrixOfDirectiveTester{
+			iTyp:         "float",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{0.0, 1.0},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d float row count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "float",
+			iMinRowCount: 0,
+			iMaxRowCount: 0,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{0.0, 1.0},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d float column count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "float",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 0,
+			iMaxColCount: 0,
+			iArgs:        []any{0.0, 1.0},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d float square matrix", i), matrixOfDirectiveTester{
+			iTyp:         "float",
+			iMinRowCount: 6,
+			iMaxRowCount: 6,
+			iMinColCount: 6,
+			iMaxColCount: 6,
+			iArgs:        []any{0.0, 1.0},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d float broad range", i), matrixOfDirectiveTester{
+			iTyp:         "float",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{-10.0, 10.0},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d float equal", i), matrixOfDirectiveTester{
+			iTyp:         "float",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{0.0, 0.0},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string baseline", i), matrixOfDirectiveTester{
+			iTyp:         "string",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{3, 6, "abc"},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string row count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "string",
+			iMinRowCount: 0,
+			iMaxRowCount: 0,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{3, 6, "abc"},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string column count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "string",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 0,
+			iMaxColCount: 0,
+			iArgs:        []any{3, 6, "abc"},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string square matrix", i), matrixOfDirectiveTester{
+			iTyp:         "string",
+			iMinRowCount: 6,
+			iMaxRowCount: 6,
+			iMinColCount: 6,
+			iMaxColCount: 6,
+			iArgs:        []any{3, 6, "abc"},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string emojis", i), matrixOfDirectiveTester{
+			iTyp:         "string",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{3, 6, "🔴🟡🟢"},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string string length of zero", i), matrixOfDirectiveTester{
+			iTyp:         "string",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{0, 0, "abc"},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d string equal string lengths", i), matrixOfDirectiveTester{
+			iTyp:         "string",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+			iArgs:        []any{6, 6, "abc"},
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d bool baseline", i), matrixOfDirectiveTester{
+			iTyp:         "bool",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d bool row count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "bool",
+			iMinRowCount: 0,
+			iMaxRowCount: 0,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d bool column count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "bool",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 0,
+			iMaxColCount: 0,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d bool square matrix", i), matrixOfDirectiveTester{
+			iTyp:         "bool",
+			iMinRowCount: 6,
+			iMaxRowCount: 6,
+			iMinColCount: 6,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d primitive baseline", i), matrixOfDirectiveTester{
+			iTyp:         "primitive",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d primitive row count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "primitive",
+			iMinRowCount: 0,
+			iMaxRowCount: 0,
+			iMinColCount: 3,
+			iMaxColCount: 6,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d primitive column count of zero", i), matrixOfDirectiveTester{
+			iTyp:         "primitive",
+			iMinRowCount: 3,
+			iMaxRowCount: 6,
+			iMinColCount: 0,
+			iMaxColCount: 0,
+		}.assertMatrix())
+		t.Run(fmt.Sprintf("%d primitive square matrix", i), matrixOfDirectiveTester{
+			iTyp:         "primitive",
+			iMinRowCount: 6,
+			iMaxRowCount: 6,
+			iMinColCount: 6,
+			iMaxColCount: 6,
+		}.assertMatrix())
+	}
+	t.Run("null invalid min row count", matrixOfDirectiveTester{
+		iTyp:         "null",
+		iMinRowCount: -1,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("null invalid max row count", matrixOfDirectiveTester{
+		iTyp:         "null",
+		iMinRowCount: 3,
+		iMaxRowCount: -1,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("null invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "null",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: -1,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("null invalid max column count", matrixOfDirectiveTester{
+		iTyp:         "null",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: -1,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("null min row count greater than max row count", matrixOfDirectiveTester{
+		iTyp:         "null",
+		iMinRowCount: 6,
+		iMaxRowCount: 3,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: min row count cannot exceed max row count"),
 	}.assertMinGreaterThanMaxError())
+	t.Run("null min column count greater than max column count", matrixOfDirectiveTester{
+		iTyp:         "null",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 6,
+		iMaxColCount: 3,
+		oErr:         errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("int invalid min row count", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: -1,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0, 3},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("int invalid max row count", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: 3,
+		iMaxRowCount: -1,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0, 3},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("int invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: -1,
+		iMaxColCount: 6,
+		iArgs:        []any{0, 3},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("int invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: -1,
+		iArgs:        []any{0, 3},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("int min row count greater than max row count", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: 6,
+		iMaxRowCount: 3,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0, 3},
+		oErr:         errors.New("freeformgen: min row count cannot exceed max row count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("int min column count greater than max column count", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 6,
+		iMaxColCount: 3,
+		iArgs:        []any{0, 3},
+		oErr:         errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("int min greater than max", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{1, -1},
+		oErr:         errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("int incorrect args", matrixOfDirectiveTester{
+		iTyp:         "int",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0, 3, 24},
+		oErr:         errors.New("freeformgen: wrong number of args"),
+	}.assertIncorrectArgsError())
+	t.Run("float invalid min row count", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: -1,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0.0, 1.0},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("float invalid max row count", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: 3,
+		iMaxRowCount: -1,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0.0, 1.0},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("float invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: -1,
+		iMaxColCount: 6,
+		iArgs:        []any{0.0, 1.0},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("float invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: -1,
+		iArgs:        []any{0.0, 1.0},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("float min row count greater than max row count", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: 6,
+		iMaxRowCount: 3,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0.0, 1.0},
+		oErr:         errors.New("freeformgen: min row count cannot exceed max row count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("float min column count greater than max column count", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 6,
+		iMaxColCount: 3,
+		iArgs:        []any{0.0, 1.0},
+		oErr:         errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("float min greater than max", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{1.0, -1.0},
+		oErr:         errors.New("freeformgen: min cannot exceed max"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("float incorrect args", matrixOfDirectiveTester{
+		iTyp:         "float",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{0.0, 1.0, 24.0},
+		oErr:         errors.New("freeformgen: wrong number of args"),
+	}.assertIncorrectArgsError())
+	t.Run("string invalid min row count", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: -1,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{3, 6, "abc"},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("string invalid max row count", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: -1,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{3, 6, "abc"},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("string invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: -1,
+		iMaxColCount: 6,
+		iArgs:        []any{3, 6, "abc"},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("string invalid max column count", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: -1,
+		iArgs:        []any{3, 6, "abc"},
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("string min row count greater than max row count", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 6,
+		iMaxRowCount: 3,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{3, 6, "abc"},
+		oErr:         errors.New("freeformgen: min row count cannot exceed max row count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("string min column count greater than max column count", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 6,
+		iMaxColCount: 3,
+		iArgs:        []any{3, 6, "abc"},
+		oErr:         errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("string invalid min string length", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{-1, 6, "abc"},
+		oErr:         errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("string invalid max string length", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{3, -1, "abc"},
+		oErr:         errors.New("freeformgen: string cannot have a negative length"),
+	}.assertInvalidLengthError())
+	t.Run("string min string length greater than max string length", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{6, 3, "abc"},
+		oErr:         errors.New("freeformgen: min string length cannot exceed max string length"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("string empty charset", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{3, 6, ""},
+		oErr:         errors.New("freeformgen: charset cannot be empty"),
+	}.assertEmptyCharsetError())
+	t.Run("string incorrect args", matrixOfDirectiveTester{
+		iTyp:         "string",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		iArgs:        []any{3, 6, "", "foo"},
+		oErr:         errors.New("freeformgen: wrong number of args"),
+	}.assertIncorrectArgsError())
+	t.Run("bool invalid min row count", matrixOfDirectiveTester{
+		iTyp:         "bool",
+		iMinRowCount: -1,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("bool invalid max row count", matrixOfDirectiveTester{
+		iTyp:         "bool",
+		iMinRowCount: 3,
+		iMaxRowCount: -1,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("bool invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "bool",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: -1,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("bool invalid max column count", matrixOfDirectiveTester{
+		iTyp:         "bool",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: -1,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("bool min row count greater than max row count", matrixOfDirectiveTester{
+		iTyp:         "bool",
+		iMinRowCount: 6,
+		iMaxRowCount: 3,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: min row count cannot exceed max row count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("bool min column count greater than max column count", matrixOfDirectiveTester{
+		iTyp:         "bool",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 6,
+		iMaxColCount: 3,
+		oErr:         errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("primitive invalid min row count", matrixOfDirectiveTester{
+		iTyp:         "primitive",
+		iMinRowCount: -1,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("primitive invalid max row count", matrixOfDirectiveTester{
+		iTyp:         "primitive",
+		iMinRowCount: 3,
+		iMaxRowCount: -1,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative row count"),
+	}.assertInvalidRowCountError())
+	t.Run("primitive invalid min column count", matrixOfDirectiveTester{
+		iTyp:         "primitive",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: -1,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("primitive invalid max column count", matrixOfDirectiveTester{
+		iTyp:         "primitive",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: -1,
+		oErr:         errors.New("freeformgen: matrix cannot have a negative column count"),
+	}.assertInvalidColCountError())
+	t.Run("primitive min row count greater than max row count", matrixOfDirectiveTester{
+		iTyp:         "primitive",
+		iMinRowCount: 6,
+		iMaxRowCount: 3,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New("freeformgen: min row count cannot exceed max row count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("primitive min column count greater than max column count", matrixOfDirectiveTester{
+		iTyp:         "primitive",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 6,
+		iMaxColCount: 3,
+		oErr:         errors.New("freeformgen: min column count cannot exceed max column count"),
+	}.assertMinGreaterThanMaxError())
+	t.Run("invalid type", matrixOfDirectiveTester{
+		iTyp:         "foo",
+		iMinRowCount: 3,
+		iMaxRowCount: 6,
+		iMinColCount: 3,
+		iMaxColCount: 6,
+		oErr:         errors.New(`freeformgen: invalid type "foo"`),
+	}.assertInvalidTypeError())
 }

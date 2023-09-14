@@ -381,3 +381,38 @@ func vectorOfDirective(typ string, minLength, maxLength int, args ...any) (any, 
 		return nil, freeformgenError{fmt.Errorf("invalid type %q", typ)}
 	}
 }
+
+func matrixOfDirective(typ string, minRowCount, maxRowCount, minColCount, maxColCount int, args ...any) (any, error) {
+	switch typ {
+	case "null":
+		return mNullDirective(minRowCount, maxRowCount, minColCount, maxColCount)
+	case "int":
+		if len(args) != 2 {
+			return nil, freeformgenError{errors.New("wrong number of args")}
+		}
+		min := args[0].(int)
+		max := args[1].(int)
+		return mIntegerDirective(minRowCount, maxRowCount, minColCount, maxColCount, min, max)
+	case "float":
+		if len(args) != 2 {
+			return nil, freeformgenError{errors.New("wrong number of args")}
+		}
+		min := args[0].(float64)
+		max := args[1].(float64)
+		return mFloatDirective(minRowCount, maxRowCount, minColCount, maxColCount, min, max)
+	case "string":
+		if len(args) != 3 {
+			return nil, freeformgenError{errors.New("wrong number of args")}
+		}
+		minStrLength := args[0].(int)
+		maxStrLength := args[1].(int)
+		charset := args[2].(string)
+		return mStringDirective(minRowCount, maxRowCount, minColCount, maxColCount, minStrLength, maxStrLength, charset)
+	case "bool":
+		return mBooleanDirective(minRowCount, maxRowCount, minColCount, maxColCount)
+	case "primitive":
+		return mPrimitiveDirective(minRowCount, maxRowCount, minColCount, maxColCount)
+	default:
+		return nil, freeformgenError{fmt.Errorf("invalid type %q", typ)}
+	}
+}
